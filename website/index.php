@@ -20,7 +20,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 session_start();
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['role'] = $user['role'];
-                header("Location: template/homepage.html");
+                if ($user['role'] === 'admin') {
+                    header("Location: template/admin.php");
+                } else {
+                    header("Location: template/homepage.html");
+                }
                 exit();
             } else {
                 $message = "Invalid password.";
