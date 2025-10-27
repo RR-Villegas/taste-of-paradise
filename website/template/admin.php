@@ -26,8 +26,10 @@ include '../php/config.php';
           <li><a href="#users">Users</a></li>
           <li><a href="#orders">Orders</a></li>
           <li><a href="#settings">Settings</a></li>
-          <li><a href="../php/logout.php">Logout</a></li>
         </ul>
+        <div class="logout-section">
+          <button onclick="if(confirm('Are you sure you want to logout?')) window.location.href='../php/logout.php';" class="logout-btn">Logout</button>
+        </div>
       </aside>
 
       <main class="main-content">
