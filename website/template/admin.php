@@ -13,81 +13,7 @@ include '../php/config.php';
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Taste of Paradise | Admin Panel</title>
-    <link rel="stylesheet" href="../static/css/homepage.css"/>
-    <style>
-      .admin-container {
-        display: flex;
-        min-height: 100vh;
-      }
-      .sidebar {
-        width: 250px;
-        background-color: #4b2e0b;
-        color: #fff8e1;
-        padding: 2rem 1rem;
-        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-      }
-      .sidebar h2 {
-        text-align: center;
-        margin-bottom: 2rem;
-        color: #ffcc80;
-      }
-      .sidebar ul {
-        list-style: none;
-      }
-      .sidebar ul li {
-        margin-bottom: 1rem;
-      }
-      .sidebar ul li a {
-        color: #fff8e1;
-        text-decoration: none;
-        display: block;
-        padding: 0.5rem;
-        border-radius: 5px;
-        transition: background-color 0.3s;
-      }
-      .sidebar ul li a:hover {
-        background-color: #5a3d2a;
-      }
-      .main-content {
-        flex: 1;
-        padding: 2rem;
-        background: linear-gradient(180deg, #f5e1c0, #d8b899, #8b5e3c);
-      }
-      .dashboard-section {
-        background: #fffaf3;
-        border-radius: 20px;
-        padding: 2rem;
-        box-shadow: 0 8px 16px rgba(75, 46, 11, 0.2);
-        margin-bottom: 2rem;
-      }
-      .dashboard-section h1 {
-        color: #4b2e0b;
-        margin-bottom: 1rem;
-      }
-      .stats-grid {
-        display: flex;
-        gap: 2rem;
-        flex-wrap: wrap;
-      }
-      .stat-card {
-        background: #fff;
-        border-radius: 10px;
-        padding: 1rem;
-        flex: 1;
-        min-width: 200px;
-        text-align: center;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      }
-      .stat-card h3 {
-        color: #4b2e0b;
-        margin-bottom: 0.5rem;
-      }
-      .stat-card p {
-        font-size: 2rem;
-        color: #5a4631;
-        font-weight: bold;
-      }
-    </style>
+    <link rel="stylesheet" href="../static/css/admin.css"/>
   </head>
   <body>
     <div class="admin-container">
@@ -127,8 +53,7 @@ include '../php/config.php';
             <div class="stat-card">
               <h3>Total Orders</h3>
               <p><?php
-                // Assuming an orders table exists, for now placeholder
-                echo "0"; // Replace with actual query
+                echo "0";
               ?></p>
             </div>
           </div>
@@ -144,12 +69,10 @@ include '../php/config.php';
           </form>
         </section>
 
-        <!-- Add more sections as needed -->
       </main>
     </div>
 
     <script>
-      // Simple navigation script
       const sections = document.querySelectorAll('.dashboard-section');
       const links = document.querySelectorAll('.sidebar a');
 

@@ -5,7 +5,7 @@ CREATE DATABASE food_paradise;
 USE food_paradise;
 
 CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
@@ -16,8 +16,8 @@ CREATE TABLE users (
 );
 
 CREATE TABLE products (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_name VARCHAR(255) NOT NULL,
     description TEXT,
     price DECIMAL(10,2) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

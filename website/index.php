@@ -1,5 +1,4 @@
 <?php
-include 'php/config.php';
 
 $message = '';
 
@@ -18,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $user = $result->fetch_assoc();
             if (password_verify($password, $user['password'])) {
                 session_start();
-                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['user_id'] = $user['user_id'];
                 $_SESSION['role'] = $user['role'];
                 if ($user['role'] === 'admin') {
                     header("Location: template/admin.php");
@@ -62,28 +61,7 @@ $conn->close();
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Taste of Paradise</title>
-    <link rel="stylesheet" href="static/css/landingpage.css" />
-    <style>
-      /* Minimal CSS for fade/slide transitions between login and signup */
-      .right-panel .form-box {
-        position: absolute;
-        width: 100%;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        transition: opacity 0.6s ease, transform 0.6s ease;
-      }
-      .right-panel .form-box.hidden {
-        opacity: 0;
-        pointer-events: none;
-        transform: translate(-50%, -60%);
-      }
-      .message {
-        color: red;
-        text-align: center;
-        margin-bottom: 10px;
-      }
-    </style>
+    <link rel="stylesheet" href="static/css/index.css" />
   </head>
   <body>
     <div class="container">
@@ -109,7 +87,7 @@ $conn->close();
             <button type="submit" name="login">Login</button>
             <a href="#" class="forgot">Forgot Password?</a>
             <div class="tab">
-              <a href="#" class="fb-btn" target="_blank">ⓕ 𝐟𝐚𝐜𝐞𝐛𝐨𝐯𝐨𝐨𝐤</a>
+              <a href="#" class="fb-btn" target="_blank">ⓕ F𝐚𝐜𝐞𝐛𝐨𝐨𝐤</a>
               <a href="#" class="ig-btn" target="_blank">🅾 𝐈𝐧𝐬𝐭𝐚𝐠𝐫𝐚𝐦</a>
             </div>
             <p style="margin-bottom: 10px; font-size: 0.95rem">

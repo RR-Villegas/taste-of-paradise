@@ -11,8 +11,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $description = $_POST['description'];
     $price = $_POST['price'];
 
-    // Assuming a products table: CREATE TABLE products (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), description TEXT, price DECIMAL(10,2));
-    $sql = "INSERT INTO products (name, description, price) VALUES (?, ?, ?)";
+
+    $sql = "INSERT INTO products (product_name, description, price) VALUES (?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssd", $name, $description, $price);
 
