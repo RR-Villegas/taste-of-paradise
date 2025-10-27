@@ -71,6 +71,44 @@ include '../php/config.php';
           </form>
         </section>
 
+        <section id="manage-products" class="dashboard-section" style="display: none;">
+          <h1>Manage Products</h1>
+          <div class="product-list">
+            <h2>Existing Products</h2>
+            <?php
+              $sql = "SELECT * FROM products ORDER BY created_at DESC";
+              $result = $conn->query($sql);
+              if ($result->num_rows > 0) {
+                echo "<table class='product-table'>";
+                echo "<thead><tr><th>ID</th><th>Name</th><th>Description</th><th>Price</th><th>Actions</th></tr></thead><tbody>";
+                while ($row = $result->fetch_assoc()) {
+                  echo "<tr>";
+                  echo "<td>" . $row['product_id'] . "</td>";
+                  echo "<td>" . htmlspecialchars($row['product_name']) . "</td>";
+                  echo "<td>" . htmlspecialchars($row['description']) . "</td>";
+                  echo "<td>$" . number_format($row['price'], 2) . "</td>";
+                  echo "<td><button class='edit-btn' onclick='showEditForm(" . $row['product_id'] . ", \"" . addslashes($row['product_name']) . "\", \"" . addslashes($row['description']) . "\", " . $row['price'] . ")'>Edit</button> <button class='delete-btn' onclick='if(confirm(\"Are you sure you want to delete this product?\")) window.location.href=\"../php/delete_product.php?id=" . $row['product_id'] . "\"'>Delete</button></td>";
+                  echo "</tr>";
+                }
+                echo "</tbody></table>";
+              } else {
+                echo "<p>No products found.</p>";
+              }
+            ?>
+          </div>
+          <div id="edit-product-form" class="edit-product-form" style="display: none;">
+            <h2>Edit Product</h2>
+            <form method="POST" action="../php/edit_product.php">
+              <input type="hidden" id="edit-product-id" name="product_id">
+              <input type="text" id="edit-name" name="name" placeholder="Product Name" required>
+              <textarea id="edit-description" name="description" placeholder="Description"></textarea>
+              <input type="number" id="edit-price" name="price" placeholder="Price" step="0.01" required>
+              <button type="submit">Update Product</button>
+              <button type="button" onclick="hideEditForm()">Cancel</button>
+            </form>
+          </div>
+        </section>
+
       </main>
     </div>
 
@@ -87,6 +125,18 @@ include '../php/config.php';
           });
         });
       });
+
+      function showEditForm(id, name, description, price) {
+        document.getElementById('edit-product-id').value = id;
+        document.getElementById('edit-name').value = name;
+        document.getElementById('edit-description').value = description;
+        document.getElementById('edit-price').value = price;
+        document.getElementById('edit-product-form').style.display = 'block';
+      }
+
+      function hideEditForm() {
+        document.getElementById('edit-product-form').style.display = 'none';
+      }
     </script>
   </body>
 </html>
