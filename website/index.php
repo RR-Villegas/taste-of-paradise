@@ -17,15 +17,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result->num_rows > 0) {
             $user = $result->fetch_assoc();
             if (password_verify($password, $user['password'])) {
-                session_start();
-                $_SESSION['user_id'] = $user['user_id'];
-                $_SESSION['role'] = $user['role'];
-                if ($user['role'] === 'admin') {
-                    header("Location: template/admin.php");
+                if (in_array($user['role'], ['user', 'employee'])) {
+                    session_start();
+                    $_SESSION['user_id'] = $user['user_id'];
+                    $_SESSION['role'] = $user['role'];
+                    header("Location: php/homepage.php");
+                    exit();
                 } else {
-                    header("Location: template/homepage.html");
+                    $message = "This portal is for non-admin users. Please use Admin Login.";
                 }
-                exit();
             } else {
                 $message = "Invalid password.";
             }
@@ -78,6 +78,9 @@ $conn->close();
       </div>
 
       <div class="right-panel" style="position: relative">
+        <div style="position: absolute; top: 12px; right: 12px; z-index: 2;">
+          <a href="php/login_admin.php" style="text-decoration:none; padding:8px 12px; background:#1a1a1a; color:#fff; border-radius:6px; font-weight:600;">Admin Login</a>
+        </div>
         <!-- Login Form -->
         <div class="login-box form-box" id="loginBox">
           <p class="subtitle">Taste Happiness, One Bite at a Time</p>
@@ -88,8 +91,8 @@ $conn->close();
             <button type="submit" name="login">Login</button>
             <a href="#" class="forgot">Forgot Password?</a>
             <div class="tab">
-              <a href="#" class="fb-btn" target="_blank">ⓕ F𝐚𝐜𝐞𝐛𝐨𝐨𝐤</a>
-              <a href="#" class="ig-btn" target="_blank">🅾 𝐈𝐧𝐬𝐭𝐚𝐠𝐫𝐚𝐦</a>
+              <a href="https://www.facebook.com/" class="fb-btn" target="_blank">ⓕ F𝐚𝐜𝐞𝐛𝐨𝐨𝐤</a>
+              <a href="https://www.instagram.com" class="ig-btn" target="_blank">🅾 𝐈𝐧𝐬𝐭𝐚𝐠𝐫𝐚𝐦</a>
             </div>
             <p style="margin-bottom: 10px; font-size: 0.95rem">
               Don't have an account?
