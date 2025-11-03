@@ -18,5 +18,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $conn->close();
-header('Location: /website/template/admin.php#users');
+header('Location: admin.php?section=users#users');
 exit();

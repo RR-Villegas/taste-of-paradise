@@ -15,7 +15,7 @@ $products = $conn->query("SELECT product_id, product_name, description, price, c
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Taste of Paradise | Homepage</title>
-    <link rel="stylesheet" href="/website/static/css/homepage.css"/>
+    <link rel="stylesheet" href="../static/css/homepage.css"/>
   </head>
   <body>
     <header>  
@@ -25,7 +25,7 @@ $products = $conn->query("SELECT product_id, product_name, description, price, c
           <li><a href="#menu">Menu</a></li>
           <li><a href="#about">About</a></li>
           <li><a href="#contact">Contact</a></li>
-          <li><a href="/website/php/logout.php">Log out</a></li>
+          <li><a href="/food-paradise/taste-of-paradise/website/php/logout.php">Log out</a></li>
         </ul>
       </nav>
     </header>
@@ -41,7 +41,7 @@ $products = $conn->query("SELECT product_id, product_name, description, price, c
         <div class="menu-grid">
           <?php if ($products && $products->num_rows > 0): ?>
             <?php while ($p = $products->fetch_assoc()): ?>
-              <?php $img = !empty($p['image_path']) ? '/website/' . $p['image_path'] : ''; ?>
+              <?php $img = !empty($p['image_path']) ? '../' . $p['image_path'] : ''; ?>
               <div class="menu-item" role="button" tabindex="0"
                    data-name="<?php echo htmlspecialchars($p['product_name'], ENT_QUOTES); ?>"
                    data-desc="<?php echo htmlspecialchars($p['description'] ?: '', ENT_QUOTES); ?>"

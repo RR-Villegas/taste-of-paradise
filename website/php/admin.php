@@ -30,7 +30,7 @@ $active = isset($_GET['section']) && in_array($_GET['section'], $allowedSections
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Taste of Paradise | Admin Panel</title>
-<link rel="stylesheet" href="/website/static/css/admin.css"/>
+<link rel="stylesheet" href="../static/css/admin.css"/>
   </head>
   <body>
     <?php if (!empty($_SESSION['flash'])): ?>
@@ -42,13 +42,13 @@ $active = isset($_GET['section']) && in_array($_GET['section'], $allowedSections
       <aside class="sidebar">
         <h2>Admin Panel</h2>
         <ul>
-          <li><a href="/website/php/admin.php?section=dashboard#dashboard">Dashboard</a></li>
-          <li><a href="/website/php/admin.php?section=add-product#add-product">Add Product</a></li>
-          <li><a href="/website/php/admin.php?section=manage-products#manage-products">Manage Products</a></li>
-          <li><a href="/website/php/admin.php?section=users#users">Users</a></li>
+          <li><a href="?section=dashboard#dashboard">Dashboard</a></li>
+          <li><a href="?section=add-product#add-product">Add Product</a></li>
+          <li><a href="?section=manage-products#manage-products">Manage Products</a></li>
+          <li><a href="?section=users#users">Users</a></li>
         </ul>
         <div class="logout-section">
-<button onclick="if(confirm('Are you sure you want to logout?')) window.location.href='/website/php/logout.php';" class="logout-btn">Logout</button>
+<button onclick="if(confirm('Are you sure you want to logout?')) window.location.href='../php/logout.php';" class="logout-btn">Logout</button>
         </div>
       </aside>
 
@@ -83,7 +83,7 @@ $active = isset($_GET['section']) && in_array($_GET['section'], $allowedSections
 
         <section id="add-product" class="dashboard-section" style="display: <?php echo $active==='add-product'?'block':'none'; ?>;">
           <h1>Add Product</h1>
-<form method="POST" action="/website/php/add_product.php" enctype="multipart/form-data">
+<form method="POST" action="add_product.php" enctype="multipart/form-data">
             <input type="text" name="name" placeholder="Product Name" required>
             <textarea name="description" placeholder="Description"></textarea>
             <input type="number" name="price" placeholder="Price (PHP)" step="0.01" required>
@@ -122,7 +122,7 @@ $active = isset($_GET['section']) && in_array($_GET['section'], $allowedSections
 <img src="/website/<?php echo htmlspecialchars($p['image_path']); ?>" alt="thumb" style="width:80px;height:80px;object-fit:cover;border-radius:6px;border:1px solid #eee" />
                       </div>
                     <?php endif; ?>
-<form method="POST" action="/website/php/update_product.php" enctype="multipart/form-data" style="display:flex; flex-wrap:wrap; gap:6px; align-items:flex-start;">
+<form method="POST" action="update_product.php" enctype="multipart/form-data" style="display:flex; flex-wrap:wrap; gap:6px; align-items:flex-start;">
                       <input type="hidden" name="product_id" value="<?php echo $p['product_id']; ?>" />
                       <input type="text" name="name" value="<?php echo htmlspecialchars($p['product_name']); ?>" required style="width:180px" />
                       <textarea name="description" style="width:260px;height:60px"><?php echo htmlspecialchars($p['description']); ?></textarea>
@@ -139,7 +139,7 @@ $active = isset($_GET['section']) && in_array($_GET['section'], $allowedSections
                   <td style="display:none"></td>
                   <td style="display:none"></td>
                   <td style="padding:8px; vertical-align: top;">
-<form method="POST" action="/website/php/delete_product.php" onsubmit="return confirm('Delete this product?');">
+<form method="POST" action="delete_product.php" onsubmit="return confirm('Delete this product?');">
                       <input type="hidden" name="product_id" value="<?php echo $p['product_id']; ?>" />
                       <button type="submit" style="background:#c0392b;color:#fff;padding:6px 10px;border-radius:6px">Delete</button>
                     </form>
@@ -183,7 +183,7 @@ $active = isset($_GET['section']) && in_array($_GET['section'], $allowedSections
                   <td style="padding:8px;">&nbsp;<?php echo htmlspecialchars($u['created_at']); ?></td>
                   <td style="padding:8px;">
                     <?php if ($u['role'] !== 'admin'): ?>
-<form method="POST" action="/website/php/delete_user.php" onsubmit="return confirm('Delete this user?');" style="display:inline-block">
+<form method="POST" action="delete_user.php" onsubmit="return confirm('Delete this user?');" style="display:inline-block">
                       <input type="hidden" name="user_id" value="<?php echo $u['user_id']; ?>" />
                       <button type="submit" style="background:#c0392b;color:#fff;padding:6px 10px;border-radius:6px">Delete</button>
                     </form>
@@ -229,12 +229,6 @@ $active = isset($_GET['section']) && in_array($_GET['section'], $allowedSections
         });
         window.addEventListener('hashchange', function(){ show(current()); });
       })();
-    </script>
-  </body>
-</html>
-
-<?php $conn->close(); ?>
-      });
     </script>
   </body>
 </html>
