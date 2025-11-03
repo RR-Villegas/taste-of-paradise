@@ -1,0 +1,8 @@
+1. remove old index.php
+2. move homepage.html to outside and rename it to index.php
+3. move admin.php to template folder
+4. merge login_admin.php to homepage.php, 
+5. in nav in homepage, remove about and log out
+
+
+homepage logo to redirect to admin login
