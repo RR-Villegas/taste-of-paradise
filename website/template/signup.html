@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Signup Form</title>
+</head>
+<body>
+  <h1>Create an Account</h1>
+
+  <form action="process_signup.php" method="post">
+    <!-- First Name -->
+    <div>
+      <label for="first_name">First Name:</label><br />
+      <input type="text" id="first_name" name="first_name" required />
+    </div>
+
+    <!-- Last Name -->
+    <div>
+      <label for="last_name">Last Name:</label><br />
+      <input type="text" id="last_name" name="last_name" required />
+    </div>
+
+    <!-- Username -->
+    <div>
+      <label for="username">Username:</label><br />
+      <input type="text" id="username" name="username" required />
+    </div>
+
+    <!-- Email -->
+    <div>
+      <label for="email">Email:</label><br />
+      <input type="email" id="email" name="email" required />
+    </div>
+
+    <!-- Password -->
+    <div>
+      <label for="password">Password:</label><br />
+      <input type="password" id="password" name="password" minlength="6" required />
+    </div>
+
+    <!-- Confirm Password -->
+    <div>
+      <label for="confirm_password">Confirm Password:</label><br />
+      <input type="password" id="confirm_password" name="confirm_password" minlength="6" required />
+    </div>
+
+    <!-- Submit -->
+    <div>
+      <button type="submit">Sign Up</button>
+    </div>
+  </form>
+</body>
+</html>

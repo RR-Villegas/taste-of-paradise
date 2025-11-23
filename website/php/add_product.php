@@ -67,6 +67,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 $conn->close();
-header("Location: /website/template/admin.php#add-product");
+header("Location: /website/php/admin.php?section=add-product#add-product");
 exit();
 ?>

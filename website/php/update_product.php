@@ -90,5 +90,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $conn->close();
-header('Location: /website/template/admin.php#manage-products');
+header('Location: /website/php/admin.php?section=manage-products#manage-products');
 exit();

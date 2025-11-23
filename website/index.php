@@ -1,158 +1,189 @@
 <?php
+session_start();
 require_once 'php/config.php';
 
-$message = '';
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['login'])) {
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-
-        $sql = "SELECT * FROM users WHERE email = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows > 0) {
-            $user = $result->fetch_assoc();
-            if (password_verify($password, $user['password'])) {
-                if (in_array($user['role'], ['user', 'employee'])) {
-                    session_start();
-                    $_SESSION['user_id'] = $user['user_id'];
-                    $_SESSION['role'] = $user['role'];
-                    header("Location: php/homepage.php");
-                    exit();
-                } else {
-                    $message = "This portal is for non-admin users. Please use Admin Login.";
-                }
-            } else {
-                $message = "Invalid password.";
-            }
-        } else {
-            $message = "No user found with that email.";
-        }
-        $stmt->close();
-    } elseif (isset($_POST['signup'])) {
-        $first_name = $_POST['first_name'];
-        $last_name = $_POST['last_name'];
-        $username = $_POST['username'];
-        $email = $_POST['email'];
-        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-
-        $sql = "INSERT INTO users (first_name, last_name, username, email, password) VALUES (?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssss", $first_name, $last_name, $username, $email, $password);
-
-        if ($stmt->execute()) {
-            $message = "Account created successfully. Please log in.";
-        } else {
-            $message = "Error: " . $stmt->error;
-        }
-        $stmt->close();
-    }
+$isUser = isset($_SESSION['user_id']) && in_array($_SESSION['role'] ?? '', ['user','employee'], true);
+$isAdmin = isset($_SESSION['user_id']) && (($_SESSION['role'] ?? '') === 'admin');
+if ($isAdmin) {
+  header('Location: /website/php/admin.php');
+  exit();
 }
 
-$conn->close();
+$products = $conn->query("SELECT product_id, product_name, description, price, created_at FROM products ORDER BY created_at DESC, product_id DESC");
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Taste of Paradise</title>
-    <link rel="stylesheet" href="static/css/index.css" />
+    <title>Taste of Paradise | Homepage</title>
+    <link rel="stylesheet" href="/website/static/css/homepage.css"/>
   </head>
   <body>
-    <div class="container">
-      <div class="left-panel">
-        <div class="overlay">
-          <img src="static/image/Logo.png.png" alt="Taste of Paradise" />
-          <h2>LOGIN YOUR ACCOUNT</h2>
-          <div class="socials">
-            <a href="#"><i class="fa fa-facebook"></i></a>
-            <a href="#"><i class="fa fa-youtube"></i></a>
+    <header>  
+      <nav class="navbar">
+        <div class="logo">
+          <a href="/website/login.php" title="Login">
+            <img src="/website/static/image/logo.png" alt="Taste of Paradise" style="height:42px; width:auto; display:block;" />
+          </a>
+        </div>
+        <ul class="nav-links">
+          <li><a href="#menu">Menu</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <section class="welcome">
+        <h1>Welcome Back!</h1>
+        <p>This page shows the latest products added by Admin.</p>
+      </section>
+
+      <section id="menu" class="menu-preview">
+        <h2 style="margin-bottom:16px">All Products</h2>
+        <div class="menu-grid">
+          <?php if ($products && $products->num_rows > 0): ?>
+            <?php while ($p = $products->fetch_assoc()): ?>
+              <?php
+                // Default image (chocolate) so modal/cards are never blank
+                $img = '/website/static/image/chocolate.png';
+                if (!empty($p['image_path'])) {
+                  // Use uploaded image if available
+                  $img = '/website/' . $p['image_path'];
+                } else {
+                  // Fallback based on product name
+                  $nameLc = strtolower(trim($p['product_name'] ?? ''));
+                  if ($nameLc !== '') {
+                    if (strpos($nameLc, 'matcha') !== false) {
+                      $img = '/website/static/image/matcha.png';
+                    } elseif (strpos($nameLc, 'okinawa') !== false) {
+                      $img = '/website/static/image/okinawa.png';
+                    } elseif (strpos($nameLc, 'choco') !== false) {
+                      $img = '/website/static/image/chocolate.png';
+                    }
+                  }
+                }
+              ?>
+              <div class="menu-item" role="button" tabindex="0"
+                   data-name="<?php echo htmlspecialchars($p['product_name'], ENT_QUOTES); ?>"
+                   data-desc="<?php echo htmlspecialchars($p['description'] ?: '', ENT_QUOTES); ?>"
+                   data-price="<?php echo number_format((float)$p['price'], 2, '.', ''); ?>"
+                   data-image="<?php echo htmlspecialchars($img, ENT_QUOTES); ?>">
+                <img src="<?php echo htmlspecialchars($img); ?>" alt="<?php echo htmlspecialchars($p['product_name'] ?: 'Product'); ?>" />
+                <div class="menu-item-body">
+                  <h3><?php echo htmlspecialchars($p['product_name']); ?></h3>
+                  <p><?php echo nl2br(htmlspecialchars($p['description'] ?: '')); ?></p>
+                </div>
+                <div class="menu-item-footer">
+                  <span class="price">₱<?php echo number_format((float)$p['price'], 2); ?></span>
+                  <button type="button" class="view-btn">View</button>
+                </div>
+              </div>
+            <?php endwhile; ?>
+          <?php else: ?>
+            <p>No products yet. Please check back later.</p>
+          <?php endif; ?>
+        </div>
+      </section>
+
+      <!-- Product Modal -->
+      <div id="productModal" aria-hidden="true" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:1000; align-items:center; justify-content:center;">
+        <div style="background:#fff; width:min(520px, 92vw); border-radius:12px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #eee;">
+            <h3 id="pmTitle" style="margin:0; font-size:1.25rem;">Product</h3>
+            <button id="pmClose" type="button" aria-label="Close" style="background:#1a1a1a; color:#fff; border:none; width:28px; height:28px; border-radius:50%; cursor:pointer;">×</button>
+          </div>
+          <div style="padding:14px 16px;">
+            <div id="pmImageWrap" style="display:none; margin-bottom:10px;">
+              <img id="pmImage" src="" alt="" style="width:100%; height:auto; object-fit:cover; border-radius:8px;" />
+            </div>
+            <p id="pmDesc" style="white-space:pre-wrap; margin:8px 0 12px;"></p>
+            <div style="font-weight:700; font-size:1.1rem;">Price: <span id="pmPrice"></span></div>
           </div>
         </div>
       </div>
 
-      <div class="right-panel" style="position: relative">
-        <div style="position: absolute; top: 12px; right: 12px; z-index: 2;">
-          <a href="php/login_admin.php" style="text-decoration:none; padding:8px 12px; background:#1a1a1a; color:#fff; border-radius:6px; font-weight:600;">Admin Login</a>
-        </div>
-        <!-- Login Form -->
-        <div class="login-box form-box" id="loginBox">
-          <p class="subtitle">Taste Happiness, One Bite at a Time</p>
-          <?php if ($message) echo "<div class='message'>$message</div>"; ?>
-          <form method="POST" action="">
-            <input type="email" name="email" placeholder="Email" required />
-            <input type="password" name="password" placeholder="Password" required />
-            <button type="submit" name="login">Login</button>
-            <a href="#" class="forgot">Forgot Password?</a>
-            <div class="tab">
-              <a href="https://www.facebook.com/" class="fb-btn" target="_blank">ⓕ F𝐚𝐜𝐞𝐛𝐨𝐨𝐤</a>
-              <a href="https://www.instagram.com" class="ig-btn" target="_blank">🅾 𝐈𝐧𝐬𝐭𝐚𝐠𝐫𝐚𝐦</a>
-            </div>
-            <p style="margin-bottom: 10px; font-size: 0.95rem">
-              Don't have an account?
-              <span id="showSignup" style="cursor: pointer; color: #ffcc80"
-                >Sign up</span
-              >
-            </p>
-          </form>
-        </div>
+    </main>
 
-        <!-- Signup Form -->
-        <div class="signup-box form-box hidden" id="signupBox">
-          <p class="subtitle" style="margin-left: 42px">
-            Create your Taste of Paradise Account
-          </p>
-          <form method="POST" action="">
-            <div style="display: flex; gap: 10px">
-              <input type="text" name="first_name" placeholder="First Name" required />
-              <input type="text" name="last_name" placeholder="Last Name" required />
-            </div>
-            <input type="text" name="username" placeholder="Username" style="width: 82%" />
-            <input
-              type="email"
-              name="email"
-              placeholder="Email Address"
-              style="width: 82%"
-            />
-
-            <div style="display: flex; gap: 10px">
-              <input type="password" name="password" placeholder="Password" required />
-              <input type="password" name="confirm_password" placeholder="Confirm Password" required />
-            </div>
-            <button type="submit" name="signup">Sign Up</button>
-            <p style="margin-top: 10px; font-size: 0.95rem">
-              Already have an account?
-              <span id="showLogin" style="cursor: pointer; color: #ffcc80"
-                >Log in</span
-              >
-            </p>
+    <!-- Admin Login Modal -->
+    <div id="adminModal" aria-hidden="true" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:1000; align-items:center; justify-content:center;">
+      <div style="background:#fff; width:min(480px, 92vw); border-radius:12px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #eee;">
+          <h3 style="margin:0; font-size:1.15rem;">Admin Login</h3>
+          <button id="adminClose" type="button" aria-label="Close" style="background:#1a1a1a; color:#fff; border:none; width:28px; height:28px; border-radius:50%; cursor:pointer;">×</button>
+        </div>
+        <div style="padding:16px;">
+          <form method="POST" action="/website/php/login_admin.php" style="display:flex; flex-direction:column; gap:10px;">
+            <input type="email" name="email" placeholder="Email" required style="padding:10px; border:1px solid #ddd; border-radius:6px;" />
+            <input type="password" name="password" placeholder="Password" required style="padding:10px; border:1px solid #ddd; border-radius:6px;" />
+            <button type="submit" name="login" style="background:#1a1a1a; color:#fff; padding:10px; border-radius:6px; border:none; cursor:pointer;">Sign in</button>
           </form>
         </div>
       </div>
     </div>
 
+    <footer>
+      <p>&copy; <?php echo date('Y'); ?> Taste of Paradise. All rights reserved.</p>
+    </footer>
     <script>
-      const loginBox = document.getElementById("loginBox");
-      const signupBox = document.getElementById("signupBox");
-      const showSignup = document.getElementById("showSignup");
-      const showLogin = document.getElementById("showLogin");
+      (function(){
+        // Product modal existing logic
+        const modal = document.getElementById('productModal');
+        const title = document.getElementById('pmTitle');
+        const desc = document.getElementById('pmDesc');
+        const price = document.getElementById('pmPrice');
+        const imgWrap = document.getElementById('pmImageWrap');
+        const img = document.getElementById('pmImage');
+        const closeBtn = document.getElementById('pmClose');
 
-      showSignup.addEventListener("click", () => {
-        loginBox.classList.add("hidden");
-        signupBox.classList.remove("hidden");
-      });
+        function openModal(d){
+          title.textContent = d.name || 'Product';
+          desc.textContent = d.desc || '';
+          price.textContent = '₱' + Number(d.price || 0).toFixed(2);
+          if (d.image){
+            img.src = d.image; img.alt = d.name || 'Product';
+            imgWrap.style.display = 'block';
+          } else {
+            img.src = ''; img.alt = '';
+            imgWrap.style.display = 'none';
+          }
+          modal.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+        }
+        function closeModal(){
+          modal.style.display = 'none';
+          document.body.style.overflow = '';
+        }
+        closeBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
 
-      showLogin.addEventListener("click", () => {
-        signupBox.classList.add("hidden");
-        loginBox.classList.remove("hidden");
-      });
+        document.querySelectorAll('.menu-item .view-btn, .menu-item').forEach(el => {
+          el.addEventListener('click', (e) => {
+            const card = e.currentTarget.closest('.menu-item');
+            if (!card) return;
+            const data = {
+              name: card.getAttribute('data-name'),
+              desc: card.getAttribute('data-desc'),
+              price: card.getAttribute('data-price'),
+              image: card.getAttribute('data-image')
+            };
+            openModal(data);
+          });
+        });
+
+        // Admin modal open/close
+        const adminModal = document.getElementById('adminModal');
+        const adminBtn = document.getElementById('adminLoginBtn');
+        const adminClose = document.getElementById('adminClose');
+        if (adminBtn) {
+          adminBtn.addEventListener('click', function(e){ e.preventDefault(); adminModal.style.display='flex'; document.body.style.overflow='hidden'; });
+        }
+        if (adminClose) {
+          adminClose.addEventListener('click', function(){ adminModal.style.display='none'; document.body.style.overflow=''; });
+        }
+        adminModal.addEventListener('click', function(e){ if(e.target===adminModal){ adminModal.style.display='none'; document.body.style.overflow=''; }});
+      })();
     </script>
   </body>
 </html>
-
+<?php $conn->close(); ?>

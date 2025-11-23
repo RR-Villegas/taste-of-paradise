@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['login'])) {
                 session_start();
                 $_SESSION['user_id'] = $user['user_id'];
                 $_SESSION['role'] = $user['role'];
-                header("Location: ../template/homepage.php");
+header("Location: /website/");
                 exit();
             } else {
                 $message = "This portal is for non-admin users only.";
