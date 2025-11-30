@@ -229,3 +229,28 @@ footer a {
     height: 220px;
   }
 }
+
+#pmImage {
+  width: 200px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+  margin: 0 auto;
+}
+
+.menu-item-img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 15px;
+  margin-bottom: 1rem;
+}
+
+/* Fix modal image container centering */
+#pmImageWrap {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin-bottom: 10px;
+}

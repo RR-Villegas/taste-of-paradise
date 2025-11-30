@@ -63,7 +63,7 @@ $conn->close();
             <input type="password" name="password" placeholder="Password" required />
             <button type="submit" name="login">Login</button>
             <p style="margin-top: 10px; font-size: 0.95rem">
-              Not an admin? <a href="../index.php">User login</a>
+              &nbsp;
             </p>
           </form>
         </div>

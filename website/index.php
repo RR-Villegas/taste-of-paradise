@@ -23,20 +23,17 @@ $products = $conn->query("SELECT product_id, product_name, description, price, c
     <header>  
       <nav class="navbar">
         <div class="logo">
-          <a href="/website/login.php" title="Login">
+          <a href="/website/php/login_admin.php" title="Admin Login">
             <img src="/website/static/image/logo.png" alt="Taste of Paradise" style="height:42px; width:auto; display:block;" />
           </a>
         </div>
-        <ul class="nav-links">
-          <li><a href="#menu">Menu</a></li>
-        </ul>
       </nav>
     </header>
 
     <main>
       <section class="welcome">
         <h1>Welcome Back!</h1>
-        <p>This page shows the latest products added by Admin.</p>
+        <p>This page shows the latest products</p>
       </section>
 
       <section id="menu" class="menu-preview">
@@ -69,7 +66,7 @@ $products = $conn->query("SELECT product_id, product_name, description, price, c
                    data-desc="<?php echo htmlspecialchars($p['description'] ?: '', ENT_QUOTES); ?>"
                    data-price="<?php echo number_format((float)$p['price'], 2, '.', ''); ?>"
                    data-image="<?php echo htmlspecialchars($img, ENT_QUOTES); ?>">
-                <img src="<?php echo htmlspecialchars($img); ?>" alt="<?php echo htmlspecialchars($p['product_name'] ?: 'Product'); ?>" />
+                <img class="menu-item-img" src="<?php echo htmlspecialchars($img); ?>" alt="<?php echo htmlspecialchars($p['product_name'] ?: 'Product'); ?>" />
                 <div class="menu-item-body">
                   <h3><?php echo htmlspecialchars($p['product_name']); ?></h3>
                   <p><?php echo nl2br(htmlspecialchars($p['description'] ?: '')); ?></p>
@@ -94,8 +91,8 @@ $products = $conn->query("SELECT product_id, product_name, description, price, c
             <button id="pmClose" type="button" aria-label="Close" style="background:#1a1a1a; color:#fff; border:none; width:28px; height:28px; border-radius:50%; cursor:pointer;">×</button>
           </div>
           <div style="padding:14px 16px;">
-            <div id="pmImageWrap" style="display:none; margin-bottom:10px;">
-              <img id="pmImage" src="" alt="" style="width:100%; height:auto; object-fit:cover; border-radius:8px;" />
+<div id="pmImageWrap" style="display: flex; justify-content: center; align-items: center; margin-bottom:10px;">
+              <img id="pmImage" src="" alt="" style="width:200px; height:300px; object-fit:cover; border-radius:8px;" />
             </div>
             <p id="pmDesc" style="white-space:pre-wrap; margin:8px 0 12px;"></p>
             <div style="font-weight:700; font-size:1.1rem;">Price: <span id="pmPrice"></span></div>

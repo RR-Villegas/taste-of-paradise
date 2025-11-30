@@ -1,0 +1,19 @@
+index (homepage)
+- all products preview separation: drinks (milktea, soda), foods and other stuff.
+- product modal image when selecting isn't centered
+- product modal (in case of milkteas) should have add-ons that also update the price.
+
+login
+- remove user login
+
+
+admin panel
+- remove total users and orders, suggestion: show the most recent added product
+- redesign add product
+- add product: add categorization of products, add sizes (s/m/l etc.) and price per size, add add
+- redesign manage products
+- users remove on final product
+
+api
+- leaflet
+- brevo

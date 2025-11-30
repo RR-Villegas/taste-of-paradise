@@ -1,9 +1,7 @@
 <?php
-require_once 'config.php';
-
-$message = '';
-
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['login'])) {
+// User login is disabled; redirect to homepage or admin login.
+header('Location: ../index.php');
+exit();
     $email = $_POST['email'] ?? '';
     $password = $_POST['password'] ?? '';
 
