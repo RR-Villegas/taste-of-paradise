@@ -1,26 +1,29 @@
 <?php
-// Set the HTTP response code to 401
-http_response_code(401);
+// Set the HTTP response code to 404
+http_response_code(404);
 
-// Get the redirect URL from the query string or default to the admin login page
-$redirectUrl = htmlspecialchars($_GET['redirect'] ?? '/taste-of-paradise-a/index.php', ENT_QUOTES);
+// Default redirection URL (e.g., the public homepage)
+// Adjust this path if your main page is located elsewhere
+$redirectUrl = htmlspecialchars('/taste-of-paradise-a/index.php', ENT_QUOTES); 
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>401 Unauthorized - Admin Access</title>
+    <title>404 Not Found | Taste of Paradise</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/taste-of-paradise-a/static/css/401_unauthorized.css"> 
+    
+    <link rel="stylesheet" href="/taste-of-paradise-a/static/css/404_not_found.css"> 
+    
 </head>
 <body>
     <div class="error-container">
-        <h1>401</h1>
-        <div class="error-title">🔒 Unauthorized Access</div>
-        <p>You attempted to access an **Admin Area** without proper credentials.</p>
-        <p>Access is restricted. You must log in as an administrator to continue.</p>
-        <div class="countdown">Redirecting to login in <span id="countdown">5</span> seconds...</div>
+        <h1>404</h1>
+        <div class="error-title">🔍 Page Not Found</div>
+        <p>Uh oh! The page you were looking for doesn't exist.</p>
+        <p>It might have been moved, deleted, or you mistyped the address.</p>
+        <div class="countdown">Redirecting to the homepage in <span id="countdown">5</span> seconds...</div>
     </div>
     <script>
         let seconds = 5;

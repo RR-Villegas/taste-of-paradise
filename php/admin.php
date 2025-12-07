@@ -1,8 +1,14 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    include 'error_401.php';
-    exit();
+    // 1. We MUST still set the HTTP status code for proper compliance.
+    http_response_code(401);
+    if (ob_get_level() > 0) {
+        ob_clean();
+    }
+    include 'error_401.php'; 
+    
+    exit(); 
 }
 // Robust config loader in case file moved
 $__cfg_loaded = false;

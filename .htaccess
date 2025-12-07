@@ -1,0 +1,12 @@
+# .htaccess content (in /taste-of-paradise-a/.htaccess)
+
+# 1. Disable displaying errors directly to the browser
+php_flag display_errors off
+
+# 2. Log errors instead (Recommended for debugging later)
+php_flag log_errors on
+
+# ... your ErrorDocument directives follow:
+ErrorDocument 404 /taste-of-paradise-a/php/error_404.php
+ErrorDocument 401 /taste-of-paradise-a/php/error_401.php
+ErrorDocument 500 /taste-of-paradise-a/php/error_500.php
