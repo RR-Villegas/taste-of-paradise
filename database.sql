@@ -10,8 +10,14 @@ CREATE TABLE users (
     last_name VARCHAR(50) NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
+    PASSWORD VARCHAR(255) NOT NULL,
     role ENUM('admin') DEFAULT 'admin',
+    
+    -- --- START: OTP Columns for 2FA ---
+    otp_code VARCHAR(6) NULL COMMENT 'Stores the 6-digit OTP for email verification',
+    otp_expiry DATETIME NULL COMMENT 'Timestamp when the OTP expires (e.g., 5 minutes from generation)',
+    -- --- END: OTP Columns for 2FA ---
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -44,7 +50,8 @@ CREATE TABLE product_addons (
 );
 
 -- Seed default admin user
-INSERT INTO users (user_id, first_name, last_name, username, email, password, role) VALUES
+-- Hashed password for 'admin'
+INSERT INTO users (user_id, first_name, last_name, username, email, PASSWORD, role) VALUES
 (1, 'admin', 'admin', 'admin', 'fishbaitssgg@gmail.com', '$2y$10$u/aVKFcL8zR3CouZSDWjjewwdzVsOW00b5CSSL.s2CKTNm1QvtzYa', 'admin');
 
 -- Seed test products (3 drinks, 3 food)
@@ -78,4 +85,3 @@ INSERT INTO product_addons (product_id, addon_id, is_included) VALUES
 INSERT INTO product_addons (product_id, addon_id, is_included) VALUES
 (3, 3, FALSE),  -- Pearl optional
 (3, 2, FALSE);  -- Extra Sugar optional
-
