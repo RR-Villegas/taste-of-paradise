@@ -1,0 +1,733 @@
+/* ===== Reset ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+/* ===== Coffee Admin Color Palette ===== */
+:root {
+  --coffee-bg: #f5e1c0;
+  --coffee-bg-soft: #fffaf3;
+  --coffee-dark: #4b2e0b;
+  --coffee-mid: #8b5e3c;
+  --coffee-text: #3e2723;
+  --accent-gold: #d89b4d;
+  --accent-cream: #ffecb3;
+  --danger-red: #c0392b;
+}
+
+/* ===== General Layout ===== */
+body {
+  background: linear-gradient(180deg, var(--coffee-bg), #d8b899, var(--coffee-mid));
+  color: var(--coffee-text);
+  line-height: 1.6;
+}
+
+/* ===== Navbar ===== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #4b2e0b;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.logo {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #ffcc80;
+  letter-spacing: 1px;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #fff8e1;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #ffcc80;
+  text-shadow: 0 0 5px rgba(255, 204, 128, 0.7);
+}
+
+/* ===== Sections ===== */
+main {
+  padding: 3rem 2rem;
+}
+
+section {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+h1, h2 {
+  color: var(--coffee-dark);
+}
+
+.welcome {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.welcome h1 {
+  font-size: 2rem;
+  color: #4b2e0b;
+}
+
+.welcome p {
+  color: #5a3d2a;
+  font-size: 1.1rem;
+}
+
+.menu-grid {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  padding: 2rem;
+}
+
+.menu-item {
+  background: #fffaf3;
+  border-radius: 20px;
+  padding: 1rem;
+  width: 260px; /* consistent box width */
+  box-shadow: 0 8px 16px rgba(75, 46, 11, 0.2);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.menu-item:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 20px rgba(75, 46, 11, 0.3);
+}
+
+.menu-item img {
+  width: 100%;
+  height: 300px; /* fixed height for uniformity */
+  object-fit: cover;
+  border-radius: 15px;
+  margin-bottom: 1rem;
+}
+
+.menu-item h3 {
+  font-size: 1.2rem;
+  color: #4b2e0b;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.menu-item p {
+  font-size: 0.95rem;
+  color: #5a4631;
+  line-height: 1.5;
+}
+
+body {
+  background: linear-gradient(to bottom, #e8c7a6, #f9e1c1);
+  font-family: "Poppins", sans-serif;
+}
+
+section h3 {
+  color: #4b2e0b;
+  font-size: 1.6rem;
+  margin-bottom: 10px;
+}
+
+section p {
+  color: #3e2723;
+  max-width: 700px;
+  margin: 0 auto;
+  font-size: 1rem;
+}
+
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  background-color: #4b2e0b;
+  border-top: 2px solid #3e1f05;
+  color: #fff8e1;
+  letter-spacing: 0.5px;
+  font-size: 0.95rem;
+}
+
+footer a {
+  color: #ffcc80;
+  text-decoration: none;
+}
+
+.admin-container {
+  display: flex;
+  min-height: 100vh;
+}
+.sidebar {
+  width: 250px;
+  background-color: #4b2e0b;
+  color: #fff8e1;
+  padding: 2rem 1rem;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+.sidebar h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #ffcc80;
+}
+.sidebar ul {
+  list-style: none;
+}
+.sidebar ul li {
+  margin-bottom: 1rem;
+}
+.sidebar ul li a {
+  color: #fff8e1;
+  text-decoration: none;
+  display: block;
+  padding: 0.5rem;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+.sidebar ul li a:hover {
+  background-color: #5a3d2a;
+}
+.logout-section {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #5a3d2a;
+}
+.logout-btn {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: #ffcc80;
+  color: #4b2e0b;
+  border: none;
+  border-radius: 5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.logout-btn:hover {
+  background-color: #ffb74d;
+}
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  background: linear-gradient(180deg, #f5e1c0, #d8b899, #8b5e3c);
+}
+.dashboard-section {
+  background: var(--coffee-bg-soft);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 16px 30px rgba(75, 46, 11, 0.25);
+  margin-bottom: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+.dashboard-section h1 {
+  color: #4b2e0b;
+  margin-bottom: 1rem;
+}
+.stats-grid {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.stat-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1rem;
+  flex: 1;
+  min-width: 200px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.stat-card h3 {
+  color: #4b2e0b;
+  margin-bottom: 0.5rem;
+}
+.stat-card p {
+  font-size: 2rem;
+  color: #5a4631;
+  font-weight: bold;
+}
+
+/* Dashboard coffee theme */
+#dashboard {
+  background: radial-gradient(circle at 0 0, rgba(255, 236, 179, 0.15), transparent 55%),
+              linear-gradient(135deg, #3a2211, #140c07);
+  color: #fbead2;
+}
+#dashboard h1 {
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+#dashboard .stat-card {
+  background: rgba(34, 20, 11, 0.96);
+  border-radius: 18px;
+  box-shadow: 0 22px 46px rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 242, 214, 0.25);
+}
+#dashboard .stat-card h3 {
+  color: #fbead2;
+}
+#dashboard .stat-card p {
+  font-size: 1.8rem;
+  color: #ffe9c8;
+}
+
+/* ===== Product Forms & Tables (Admin) ===== */
+/* shared coffee card look for add/manage sections */
+#add-product h1,
+#manage-products h1 {
+  font-weight: 700;
+}
+#manage-products h1 {
+  color: #ffffff;
+}
+#manage-products {
+  background: radial-gradient(circle at 0 0, rgba(255, 236, 179, 0.18), transparent 55%),
+              linear-gradient(135deg, #311c0e, #140c07);
+  color: #fbead2;
+}
+#manage-products > p {
+  max-width: 640px;
+  margin-inline: auto;
+  color: #ffffff !important;
+}
+#manage-products .admin-table {
+  background: rgba(34, 20, 11, 0.96);
+}
+#manage-products .admin-table thead {
+  background: linear-gradient(90deg, #7a4a22, #5a3214);
+}
+#manage-products .admin-table th,
+#manage-products .admin-table td {
+  border-bottom: 1px solid rgba(255, 242, 214, 0.15);
+}
+#manage-products .admin-table tbody tr:nth-child(even) {
+  background-color: rgba(44, 26, 15, 0.9);
+}
+#manage-products .admin-table tbody tr:hover {
+  background-color: inherit;
+}
+#manage-products .product-row-form label {
+  color: #fbead2;
+}
+#manage-products .product-row-form input,
+#manage-products .product-row-form textarea {
+  background: #2a1a0f;
+  border-color: rgba(244, 205, 157, 0.5);
+  color: #ffe9c8;
+}
+#manage-products .product-row-form input::placeholder,
+#manage-products .product-row-form textarea::placeholder {
+  color: #b59678;
+}
+#manage-products .product-row-form input:focus,
+#manage-products .product-row-form textarea:focus {
+  outline: none;
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 1px rgba(216, 155, 77, 0.7);
+}
+#manage-products .product-thumb {
+  background: radial-gradient(circle at 30% 10%, rgba(255, 255, 255, 0.12), transparent 60%);
+}
+#manage-products .danger-btn {
+  background: linear-gradient(135deg, #b12f24, #7d2118);
+}
+#manage-products .secondary-btn {
+  background: linear-gradient(135deg, #e0a85a, #c47b2c);
+  color: #2b1406;
+}
+.product-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px 18px;
+  margin-top: 0.75rem;
+}
+.product-form .field,
+.product-row-form .field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+.product-form .field-full,
+.product-row-form .field-full {
+  grid-column: 1 / -1;
+}
+.product-form label,
+.product-row-form label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4b2e0b;
+}
+.product-form input,
+.product-form textarea,
+.product-row-form input,
+.product-row-form textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #ffffff;
+  font-size: 0.9rem;
+}
+.product-form textarea,
+.product-row-form textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+.field-help {
+  font-size: 0.8rem;
+  color: #7b6b5a;
+}
+.field-inline {
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+.product-form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+.primary-btn,
+.secondary-btn,
+.danger-btn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.primary-btn {
+  background: linear-gradient(135deg, #1a1a1a, #3b3b3b);
+  color: #fff;
+}
+.secondary-btn {
+  background: linear-gradient(135deg, var(--coffee-dark), var(--coffee-mid));
+  color: var(--accent-cream);
+}
+.danger-btn {
+  background-color: var(--danger-red);
+  color: #fff;
+}
+.primary-btn:hover {
+  filter: brightness(1.05);
+}
+.secondary-btn:hover {
+  filter: brightness(1.05);
+}
+.danger-btn:hover {
+  background-color: #a93226;
+}
+
+.admin-table-wrapper {
+  margin-top: 0.5rem;
+  overflow-x: auto;
+}
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.admin-table thead {
+  background: linear-gradient(90deg, var(--coffee-dark), var(--coffee-mid));
+  color: var(--accent-cream);
+}
+.admin-table th,
+.admin-table td {
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 0.9rem;
+}
+.admin-table tbody tr:nth-child(even) {
+  background-color: #fffaf3;
+}
+.admin-table tbody tr:hover {
+  background-color: rgba(255, 236, 179, 0.6);
+}
+.admin-products-table td:nth-child(3) {
+  font-weight: 600;
+  color: #ffffff !important;
+}
+.product-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+}
+.product-thumb {
+  flex: 0 0 auto;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #eee;
+}
+.product-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.product-row-form {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 8px 12px;
+}
+.product-row-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ===== Add Product Section (Admin) ===== */
+#add-product {
+  position: relative;
+  background: radial-gradient(circle at 0 0, rgba(255, 236, 179, 0.25), transparent 55%),
+              linear-gradient(135deg, #3e2410, #1f130b);
+  color: #fbead2;
+}
+
+/* Users section coffee theme */
+#users {
+  background: radial-gradient(circle at 100% 0, rgba(255, 236, 179, 0.22), transparent 55%),
+              linear-gradient(135deg, #311c0e, #140c07);
+  color: #fbead2;
+}
+#users h1 {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #ffffff;
+}
+.user-add-card {
+  margin: 0 auto 16px;
+  max-width: 1100px;
+  background: rgba(50, 30, 16, 0.96);
+  border-radius: 18px;
+  padding: 16px 20px 14px;
+  box-shadow: 0 26px 52px rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 242, 214, 0.35);
+}
+.user-add-card h2 {
+  margin: 0 0 10px 0;
+  font-size: 1.02rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #fbead2;
+}
+.user-add-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-end;
+}
+.user-add-form input,
+.user-add-form select {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(244, 205, 157, 0.5);
+  min-width: 140px;
+  background: #2a1a0f;
+  color: #ffe9c8;
+}
+.user-add-form input::placeholder {
+  color: #b59678;
+}
+.user-add-form input:focus,
+.user-add-form select:focus {
+  outline: none;
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 1px rgba(216, 155, 77, 0.7);
+}
+.user-add-form button {
+  background: linear-gradient(135deg, #e0a85a, #c47b2c);
+  color: #2b1406;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+#add-product h1 {
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+#add-product > p {
+  max-width: 640px;
+  margin-inline: auto;
+  color: #ffffff !important;
+}
+#add-product .product-form {
+  max-width: 780px;
+  margin: 0.75rem auto 0;
+  background: rgba(50, 30, 16, 0.96);
+  border-radius: 18px;
+  padding: 20px 22px 18px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 242, 214, 0.35);
+}
+#add-product .product-form .field {
+  position: relative;
+}
+#add-product .product-form label {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #fbead2;
+}
+#add-product .product-form input,
+#add-product .product-form textarea {
+  background: #2a1a0f;
+  border-color: rgba(244, 205, 157, 0.5);
+  color: #ffe9c8;
+}
+#add-product .product-form input::placeholder,
+#add-product .product-form textarea::placeholder {
+  color: #b59678;
+}
+#add-product .product-form input:focus,
+#add-product .product-form textarea:focus {
+  outline: none;
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 1px rgba(216, 155, 77, 0.7);
+}
+
+@media (max-width: 768px) {
+
+    /* 1. Admin Layout: Collapse Sidebar */
+    .admin-container {
+        /* Switch from side-by-side (flex-row) to stacked (flex-column) */
+        flex-direction: column; 
+    }
+
+    /* 1a. Sidebar Adjustments */
+    .sidebar {
+        width: 100%; /* Full width */
+        padding: 1rem 1rem 0.5rem; /* Reduced padding */
+        /* Move the sidebar navigation to the top of the screen */
+        position: relative; /* Remove fixed position if it had one */
+        /* To make links horizontal for a top nav bar */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap; /* Allow wrapping if many links */
+    }
+    .sidebar h2 {
+        /* Hide or minimize the large title for small screens */
+        display: none; 
+    }
+    .sidebar ul {
+        display: flex; /* Make links horizontal */
+        flex-grow: 1;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 0.5rem; /* Space between links */
+        margin: 0.5rem 0;
+    }
+    .sidebar ul li {
+        margin-bottom: 0; /* Remove vertical margin */
+        flex: 1 1 auto; /* Allow links to take up space */
+    }
+    .sidebar ul li a {
+        padding: 0.4rem; /* Smaller padding for smaller buttons */
+        text-align: center;
+        font-size: 0.9rem;
+    }
+    .logout-section {
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid #5a3d2a;
+        width: 100%; /* Ensure logout button takes full width */
+    }
+    .logout-btn {
+        padding: 0.4rem;
+    }
+    
+    /* 1b. Main Content Adjustments */
+    .main-content {
+        padding: 1.5rem 1rem; /* Reduce main content padding */
+    }
+
+    /* 2. Navbar Fix (For non-admin pages) */
+    .navbar {
+        padding: 0.8rem 1rem;
+    }
+    .nav-links {
+        /* Hide links or set up a menu toggle for small screens (advanced - just hide for now) */
+        display: none; /* Simplest fix: hide links on mobile */
+    }
+    /* If you need a menu button, you'd add JS and a class like .nav-open here */
+    
+    /* 3. Dashboard and Grids */
+    .dashboard-section {
+        padding: 1.5rem; /* Reduced padding */
+    }
+    .stats-grid {
+        /* Already flex-wrap: wrap, but ensure minimum width is smaller */
+        gap: 1rem; /* Reduce gap */
+    }
+    .stat-card {
+        min-width: 45%; /* Allow cards to stack two per row */
+        padding: 0.8rem;
+    }
+    .stat-card p {
+        font-size: 1.5rem; /* Reduce large number size */
+    }
+
+    /* 4. Forms and Tables */
+    .product-form,
+    .product-row-form {
+        /* Force single column layout for readability on narrow screens */
+        grid-template-columns: 1fr; 
+        gap: 10px; /* Reduce gap */
+    }
+    .product-form .field-full {
+        grid-column: auto; /* Remove explicit column span */
+    }
+    
+    /* Tables are fixed by overflow-x: auto on .admin-table-wrapper, but we ensure content fits */
+    .admin-table th,
+    .admin-table td {
+        padding: 8px 10px;
+        font-size: 0.8rem; /* Slightly smaller text for condensed tables */
+    }
+    .product-thumb {
+        width: 60px; /* Smaller thumbnail */
+        height: 60px;
+    }
+
+    /* 5. Users Add Form */
+    .user-add-form {
+        flex-direction: column; /* Stack inputs vertically */
+        align-items: stretch; /* Stretch inputs to full width */
+    }
+    .user-add-form input,
+    .user-add-form select,
+    .user-add-form button {
+        min-width: 100%; /* Force all elements to full width */
+    }
+}
+
+/* Minor fix for very small phones below 480px */
+@media (max-width: 480px) {
+    .stat-card {
+        min-width: 100%; /* Force stat cards to stack one per row */
+    }
+}
