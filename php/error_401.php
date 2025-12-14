@@ -3,7 +3,7 @@
 http_response_code(401);
 
 // Get the redirect URL from the query string or default to the admin login page
-$redirectUrl = htmlspecialchars($_GET['redirect'] ?? '/taste-of-paradise-a/index.php', ENT_QUOTES);
+$redirectUrl = htmlspecialchars($_GET['redirect'] ?? '../index.php', ENT_QUOTES);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -12,7 +12,7 @@ $redirectUrl = htmlspecialchars($_GET['redirect'] ?? '/taste-of-paradise-a/index
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>401 Unauthorized - Admin Access</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/taste-of-paradise-a/static/css/401_unauthorized.css"> 
+    <link rel="stylesheet" href="../static/css/401_unauthorized.css"> 
 </head>
 <body>
     <div class="error-container">

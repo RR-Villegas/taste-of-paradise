@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    $_GET['redirect'] = '/taste-of-paradise-a/index.php';
+    $_GET['redirect'] = '../index.php';
     include 'error_401.php';
     exit();
 }
@@ -95,20 +95,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $productId = $stmt->insert_id;
             $_SESSION['flash'] = $_SESSION['flash'] ?? "Product added successfully.";
             
-            // Link selected add-ons via product_addons junction table
-            if (isset($_POST['addon_ids']) && is_array($_POST['addon_ids'])) {
-                $linkStmt = $conn->prepare("INSERT INTO product_addons (product_id, addon_id, is_included) VALUES (?, ?, ?)");
-                if ($linkStmt) {
-                    foreach ($_POST['addon_ids'] as $addonId) {
+            if (isset($_POST['addons']) && is_array($_POST['addons'])) {
+
+                $stmtAddon = $conn->prepare(
+                    "INSERT INTO product_addons (product_id, addon_id, is_included)
+                    VALUES (?, ?, ?)"
+                );
+
+                if ($stmtAddon) {
+                    foreach ($_POST['addons'] as $addonId => $data) {
                         $addonId = (int)$addonId;
-                        if ($addonId > 0) {
-                            // Check if this addon is marked as included
-                            $isIncluded = isset($_POST['addon_included_' . $addonId]) ? 1 : 0;
-                            $linkStmt->bind_param("iii", $productId, $addonId, $isIncluded);
-                            @$linkStmt->execute();
+
+                        // Only add if explicitly enabled
+                        if (($data['add'] ?? '0') !== '1') {
+                            continue;
                         }
+
+                        $isIncluded = (($data['included'] ?? '0') === '1') ? 1 : 0;
+
+                        $stmtAddon->bind_param(
+                            "iii",
+                            $productId,
+                            $addonId,
+                            $isIncluded
+                        );
+                        $stmtAddon->execute();
                     }
-                    $linkStmt->close();
+                    $stmtAddon->close();
                 }
             }
         } else {
@@ -121,6 +134,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 $conn->close();
-header("Location: /taste-of-paradise-a/php/admin.php?section=add-product#add-product");
+header("Location: ../php/admin.php?section=add-product#add-product");
 exit();
 ?>

@@ -4,7 +4,7 @@ http_response_code(404);
 
 // Default redirection URL (e.g., the public homepage)
 // Adjust this path if your main page is located elsewhere
-$redirectUrl = htmlspecialchars('/taste-of-paradise-a/index.php', ENT_QUOTES); 
+$redirectUrl = htmlspecialchars('../index.php', ENT_QUOTES); 
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,7 +14,7 @@ $redirectUrl = htmlspecialchars('/taste-of-paradise-a/index.php', ENT_QUOTES);
     <title>404 Not Found | Taste of Paradise</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="/taste-of-paradise-a/static/css/404_not_found.css"> 
+    <link rel="stylesheet" href="../static/css/404_not_found.css"> 
     
 </head>
 <body>
