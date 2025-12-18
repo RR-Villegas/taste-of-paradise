@@ -32,17 +32,17 @@ function getProductImage($imagePath, $productName) {
   $default = '../static/image/chocolate.png';
   
   if (!empty($imagePath)) {
-    return '/taste-of-paradise-a/' . $imagePath;
+    return $imagePath;
   }
   
   $nameLc = strtolower(trim($productName ?? ''));
   if ($nameLc !== '') {
     if (strpos($nameLc, 'matcha') !== false) {
-      return '../static/image/matcha.png';
+      return 'static/image/matcha.png';
     } elseif (strpos($nameLc, 'okinawa') !== false) {
-      return '../static/image/okinawa.png';
-    } elseif (strpos($nameLc, 'choco') !== false) {
-      return '../static/image/chocolate.png';
+      return 'static/image/okinawa.png';
+    } elseif (strpos($nameLc, needle: 'choco') !== false) {
+      return 'static/image/chocolate.png';
     }
   }
   
@@ -126,7 +126,7 @@ if ($announcement) {
                     type="button"
                     class="view-btn announcement-view-btn"
                     data-title="<?= htmlspecialchars($announcement['title'], ENT_QUOTES) ?>"
-                    data-content="<?= htmlspecialchars($announcement['content'], ENT_QUOTES) ?>"
+                    data-content="<?= htmlspecialchars($fullRendered, ENT_QUOTES) ?>"
                   >
                     View
                   </button>
@@ -300,22 +300,6 @@ if ($announcement) {
         </div>
       </div>
     </main>
-
-    <div id="adminModal" aria-hidden="true" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:1000; align-items:center; justify-content:center;">
-      <div style="background:#fff; width:min(480px, 92vw); border-radius:12px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #eee;">
-          <h3 style="margin:0; font-size:1.15rem;">Admin Login</h3>
-          <button id="adminClose" type="button" aria-label="Close" style="background:#1a1a1a; color:#fff; border:none; width:28px; height:28px; border-radius:50%; cursor:pointer;">×</button>
-        </div>
-        <div style="padding:16px;">
-          <form method="POST" action="/taste-of-paradise-a/php/login_admin.php" style="display:flex; flex-direction:column; gap:10px;">
-            <input type="email" name="email" placeholder="Email" required style="padding:10px; border:1px solid #ddd; border-radius:6px;" />
-            <input type="password" name="password" placeholder="Password" required style="padding:10px; border:1px solid #ddd; border-radius:6px;" />
-            <button type="submit" name="login" style="background:#1a1a1a; color:#fff; padding:10px; border-radius:6px; border:none; cursor:pointer;">Sign in</button>
-          </form>
-        </div>
-      </div>
-    </div>
 
     <footer style="position:relative; z-index:100;">
       <p>&copy; <?php echo date('Y'); ?> Taste of Paradise. All rights reserved.</p>
@@ -738,7 +722,7 @@ if ($announcement) {
           
           const productId = data.productId;
           if (productId) {
-            fetch('/taste-of-paradise-a/php/get_product_addons.php?product_id=' + productId)
+            fetch('php/get_product_addons.php?product_id=' + productId)
               .then(res => res.json())
               .then(addons => renderAddOns(addons))
               .catch(err => {

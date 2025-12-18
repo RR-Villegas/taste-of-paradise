@@ -1,0 +1,232 @@
+/*
+ * File: admin_login.css
+ * Description: Styles for the Admin Login page (login_admin.php - desktop version).
+ * Theme: Chocolate/Coffee Split-Panel Design.
+ * Fixes: Logo Size reduced to 300px (Desktop), No Border, Responsive.
+ */
+
+/* --- 1. Global & Utility Styles --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif; 
+}
+
+body {
+    height: 100vh;
+    /* Background from the chocolate/coffee theme */
+    background: linear-gradient(135deg, #d7b899, #b68c5a);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Note: Use a real image path if desired, otherwise, the gradient is used */
+    /* background-image: url("../image/chocolate_splash_background.jpg"); */ 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+
+/* Clearer text styles */
+h2 {
+    color: #2d1a0d; /* Dark Brown */
+    margin-top: 15px;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+p {
+    margin: 0;
+    padding: 0;
+}
+
+/* --- 2. Main Layout - .container --- */
+.container {
+    display: flex;
+    width: 1100px; 
+    height: 500px; 
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(60, 40, 20, 0.7); 
+    backdrop-filter: blur(2px);
+    max-width: 90%; 
+    max-height: 90vh; 
+}
+
+/* --- 3. Left Panel - Background/Branding --- */
+.left-panel {
+    width: 45%; 
+    background: linear-gradient(145deg, #b6804a, #e1b382); 
+    color: #3e2723;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 30px;
+}
+
+.left-panel .overlay {
+    color: #2d1a0d; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.left-panel img {
+    /* *** NEW LOGO SIZE: 300px (Desktop) *** */
+    width: 300px; 
+    height: auto;
+    /* Retaining 50% ensures it's circular if the image is square */
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(80, 50, 30, 0.3);
+    /* Border removed as requested in previous step */
+    border: none; 
+    margin-bottom: 10px;
+}
+
+.left-panel h2 {
+    font-size: 2.2rem; 
+    font-weight: 700;
+    text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.4);
+}
+
+
+/* --- 4. Right Panel - Login Form Area --- */
+.right-panel {
+    width: 55%; 
+    background: rgba(46, 28, 15, 0.95);
+    color: #fbe9e7; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+/* Login Box (Form Container) */
+.login-box {
+    width: 80%;
+    max-width: 330px; 
+    text-align: center;
+    padding: 0; 
+}
+
+.login-box .subtitle {
+    font-size: 1.5rem;
+    color: #ffcc80; /* Gold/Orange accent */
+    margin-bottom: 30px;
+    font-weight: 500;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* Flash Message Style */
+.login-box .message {
+    padding: 10px 15px;
+    margin-bottom: 25px;
+    border-radius: 5px;
+    background-color: #ffcc80; 
+    color: #3e2723; 
+    border: 1px solid #b6804a;
+    font-size: 0.95rem;
+    font-weight: bold;
+}
+
+/* Form Styling */
+.login-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px; 
+    align-items: center;
+}
+
+.login-box input[type="email"],
+.login-box input[type="password"] {
+    width: 130%; 
+    padding: 15px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 10px;
+    background: #5c4033; 
+    color: #fff8e1;
+    outline: none;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+    transition: 0.3s;
+}
+
+.login-box input::placeholder {
+    color: #d7ccc8;
+    font-size: 1rem;
+}
+
+.login-box input:focus {
+    background: #6d4c41; 
+    box-shadow: 0 0 8px #ffcc80; 
+}
+
+.login-box button[type="submit"] {
+    width: 85%; 
+    padding: 18px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #d7b899, #b67a4a); 
+    color: #3e2723;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.login-box button[type="submit"]:hover {
+    transform: scale(1.05);
+    background: linear-gradient(90deg, #e3c18f, #c38b54);
+}
+
+/* Hide the empty spacer paragraph */
+.login-box p[style="margin-top: 10px; font-size: 0.95rem"] {
+    display: none; 
+}
+
+/* --- 5. Media Queries (Mobile/Tablet Layout) --- */
+
+@media (max-width: 900px) {
+    .container {
+        width: 95%;
+        flex-direction: column; /* Stack panels vertically */
+        height: auto;
+    }
+    
+    .left-panel, .right-panel {
+        width: 100%; 
+        height: auto;
+    }
+
+    .left-panel {
+        padding: 20px 0;
+    }
+
+    .left-panel img {
+        /* *** ADJUSTED LOGO SIZE FOR MOBILE: 150px *** */
+        width: 150px;
+        border: none; 
+    }
+
+    .left-panel h2 {
+        font-size: 1.8rem;
+    }
+    
+    .right-panel {
+        padding: 30px 15px;
+    }
+
+    .login-box {
+        max-width: 400px;
+    }
+
+    /* Reset width for stacked inputs/buttons */
+    .login-box input[type="email"],
+    .login-box input[type="password"],
+    .login-box button[type="submit"] {
+        width: 100%; 
+    }
+}
