@@ -3,7 +3,7 @@
 http_response_code(500);
 
 // Default redirection URL (e.g., the public homepage or a known stable page)
-$redirectUrl = htmlspecialchars('/taste-of-paradise-a/index.php', ENT_QUOTES); 
+$redirectUrl = htmlspecialchars('../index.php', ENT_QUOTES); 
 ?>
 <!DOCTYPE html>
 <html lang="en">

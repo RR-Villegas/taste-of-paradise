@@ -8,17 +8,17 @@ use Brevo\Client\Configuration;
 use GuzzleHttp\Client;
 
 $config = Configuration::getDefaultConfiguration();
-$config->setApiKey('api-key', 'API KEY HERE');
+$config->setApiKey('api-key', 'API KEY');
 
-    // /**
-    //  * 🔴 SSL BYPASS (LOCAL DEVELOPMENT ONLY)
-    //  */
-    // $guzzleClient = new Client([
-    //     'verify' => true, // ⬅ THIS IS THE BYPASS
-    // ]);
+    /**
+     * 🔴 SSL BYPASS (LOCAL DEVELOPMENT ONLY)
+     */
+    $guzzleClient = new Client([
+        'verify' => false, // ⬅ THIS IS THE BYPASS
+    ]);
 
-    // $emailApi = new TransactionalEmailsApi(
-    //     $guzzleClient,
-    //     $config
-    // );
+    $emailApi = new TransactionalEmailsApi(
+        $guzzleClient,
+        $config
+    );
  

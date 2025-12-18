@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once 'config.php';
-require_once 'helpers.php'; // For renderMarkdown()
+require_once 'helpers.php'; 
 
 $perPage = 10; // 10 announcements per page
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;

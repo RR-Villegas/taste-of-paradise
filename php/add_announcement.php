@@ -23,4 +23,4 @@ $stmt->bind_param("ss", $title, $content);
 $stmt->execute();
 
 $_SESSION['flash'] = 'Announcement published!';
-header('Location: /taste-of-paradise-a/php/admin.php?section=announcement');
+header('Location: ../php/admin.php?section=announcement');

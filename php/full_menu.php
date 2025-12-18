@@ -114,7 +114,7 @@ function formatCategoryTitle($category) {
         <header>  
             <nav class="navbar">
                 <div class="logo">
-                    <img src="/taste-of-paradise-a/static/image/logo.png" alt="Taste of Paradise" style="height:42px; width:auto; display:block;" />
+                    <img src="../static/image/logo.png" alt="Taste of Paradise" style="height:42px; width:auto; display:block;" />
                 </div>
 
                 <!-- Hamburger -->
