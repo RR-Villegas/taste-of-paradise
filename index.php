@@ -1,8 +1,13 @@
 <?php
 session_start();
 require_once 'php/config.php';
+require_once 'php/helpers.php';
 
 $isUser = isset($_SESSION['user_id']) && in_array($_SESSION['role'] ?? '', ['user','employee','admin'], true);
+
+// Fetch the latest announcement for the homepage preview
+$latestAnnouncement = $conn->query("SELECT title, content, created_at FROM announcement_blog ORDER BY created_at DESC LIMIT 1");
+$announcement = $latestAnnouncement->fetch_assoc();
 
 // Fetch all products with category
 $products = $conn->query("SELECT product_id, product_name, description, price, image_path, size_type, size_prices, category, created_at FROM products ORDER BY created_at DESC, product_id DESC");
@@ -24,24 +29,37 @@ if ($products && $products->num_rows > 0) {
  * Resolve product image path with fallback logic
  */
 function getProductImage($imagePath, $productName) {
-  $default = '/taste-of-paradise-a/static/image/chocolate.png';
+  $default = '../static/image/chocolate.png';
   
   if (!empty($imagePath)) {
-    return '/taste-of-paradise-a/' . $imagePath;
+    return $imagePath;
   }
   
   $nameLc = strtolower(trim($productName ?? ''));
   if ($nameLc !== '') {
     if (strpos($nameLc, 'matcha') !== false) {
-      return '/taste-of-paradise-a/static/image/matcha.png';
+      return 'static/image/matcha.png';
     } elseif (strpos($nameLc, 'okinawa') !== false) {
-      return '/taste-of-paradise-a/static/image/okinawa.png';
-    } elseif (strpos($nameLc, 'choco') !== false) {
-      return '/taste-of-paradise-a/static/image/chocolate.png';
+      return 'static/image/okinawa.png';
+    } elseif (strpos($nameLc, needle: 'choco') !== false) {
+      return 'static/image/chocolate.png';
     }
   }
   
   return $default;
+}
+
+if ($announcement) {
+    // Render full markdown once
+    $fullRendered = renderMarkdown($announcement['content']);
+
+    // Strip tags for preview truncation (keeps text only)
+    $plainText = trim(preg_replace('/\s+/', ' ', strip_tags($fullRendered)));
+    $truncateLimit = 120; // adjust as needed
+    // Create truncated preview
+    $truncated = mb_strlen($plainText) > $truncateLimit
+        ? mb_substr($plainText, 0, $truncateLimit) . '…'
+        : $plainText;
 }
 ?>
 <!DOCTYPE html>
@@ -50,7 +68,7 @@ function getProductImage($imagePath, $productName) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Taste of Paradise | Homepage</title>
-    <link rel="stylesheet" href="static/css/homepage.css"/>
+    <link rel="stylesheet" href="static/css/homepagey.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
@@ -60,7 +78,23 @@ function getProductImage($imagePath, $productName) {
     <header>  
       <nav class="navbar">
         <div class="logo">
-          <img src="static/image/logo.png" alt="Taste of Paradise" style="height:42px; width:auto; display:block;" />
+            <img src="static/image/logo.png" alt="Taste of Paradise"
+                style="height:42px; width:auto; display:block;" />
+        </div>
+
+        <!-- Hamburger -->
+        <div id="index-burger">
+          <button class="hamburger" aria-label="Menu" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+
+          <ul class="hamburger-menu">
+            <li><a href="index.php">Home</a></li>
+            <li><a href="php/full_menu.php">Menu</a></li>
+            <li><a href="php/announcements.php" class="active">Announcements</a></li>
+          </ul>
         </div>
       </nav>
     </header>
@@ -71,11 +105,47 @@ function getProductImage($imagePath, $productName) {
         <p>This page shows the latest products</p>
       </section>
 
+      <section id="announcements" class="menu-preview announcement-preview">
+        <h2>Latest Announcement</h2>
+        <?php if ($announcement): ?>
+          <div class="latest-announcement-card">
+            <h3><?= htmlspecialchars($announcement['title']) ?></h3>
+
+            <p class="announcement-date">
+              <?= date('F j, Y', strtotime($announcement['created_at'])) ?>
+            </p>
+
+            <div class="announcement-content">
+              <p class="announcement-preview-text">
+                <?= htmlspecialchars($truncated) ?>
+              </p>
+
+              <?php if (mb_strlen(strip_tags($fullRendered)) > $truncateLimit): ?>
+                <div class="announcement-btn-wrap">
+                  <button
+                    type="button"
+                    class="view-btn announcement-view-btn"
+                    data-title="<?= htmlspecialchars($announcement['title'], ENT_QUOTES) ?>"
+                    data-content="<?= htmlspecialchars($fullRendered, ENT_QUOTES) ?>"
+                  >
+                    View
+                  </button>
+                </div>
+              <?php endif; ?>
+            </div>
+          </div>
+        <?php else: ?>
+          <p>No announcements available at this time.</p>
+        <?php endif; ?>
+        
+        <div style="margin-top: 1.5rem;">
+          <a href="php/announcements.php" class="view-all-btn">View All Announcements</a>
+        </div>
+      </section>
       <section id="menu" class="menu-preview">
         <h2 style="margin-bottom:1.5rem">All Products</h2>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:flex-start; max-width:700px; margin:0 auto;">
           
-          <!-- DRINKS CAROUSEL -->
           <div>
             <h3 style="font-size:1.3rem; color:#4b2e0b; margin-bottom:1rem; text-align:center;">Drinks</h3>
             <div class="carousel-container" data-category="drinks" style="width:280px; margin:0 auto;">
@@ -92,22 +162,25 @@ function getProductImage($imagePath, $productName) {
                   }
                 ?>
                   <div class="carousel-item menu-item" role="button" tabindex="0" 
-                       style="position:absolute; inset:0; opacity:<?php echo $index === 0 ? '1' : '0'; ?>; transition:opacity 0.4s ease;"
-                       data-product-id="<?php echo (int)$p['product_id']; ?>"
-                       data-name="<?php echo htmlspecialchars($p['product_name'], ENT_QUOTES); ?>"
-                       data-desc="<?php echo htmlspecialchars($p['description'] ?: '', ENT_QUOTES); ?>"
-                       data-price="<?php echo number_format($displayPrice, 2, '.', ''); ?>"
-                       data-size-type="<?php echo htmlspecialchars($p['size_type'] ?? 'none', ENT_QUOTES); ?>"
-                       data-size-prices="<?php echo htmlspecialchars($p['size_prices'] ?? '', ENT_QUOTES); ?>"
-                       data-image="<?php echo htmlspecialchars($img, ENT_QUOTES); ?>">
-                    <img class="menu-item-img" src="<?php echo htmlspecialchars($img); ?>" alt="<?php echo htmlspecialchars($p['product_name'] ?: 'Product'); ?>" />
-                    <div class="menu-item-body">
-                      <h3><?php echo htmlspecialchars($p['product_name']); ?></h3>
-                      <p><?php echo nl2br(htmlspecialchars($p['description'] ?: '')); ?></p>
-                    </div>
-                    <div class="menu-item-footer">
-                      <span class="price">₱<?php echo number_format($displayPrice, 2); ?></span>
-                      <button type="button" class="view-btn">View</button>
+                      style="position:absolute; inset:0; opacity:<?php echo $index === 0 ? '1' : '0'; ?>; transition:opacity 0.4s ease;"
+                      data-product-id="<?php echo (int)$p['product_id']; ?>"
+                      data-name="<?php echo htmlspecialchars($p['product_name'], ENT_QUOTES); ?>"
+                      data-desc="<?php echo htmlspecialchars($p['description'] ?: '', ENT_QUOTES); ?>"
+                      data-price="<?php echo number_format($displayPrice, 2, '.', ''); ?>"
+                      data-size-type="<?php echo htmlspecialchars($p['size_type'] ?? 'none', ENT_QUOTES); ?>"
+                      data-size-prices="<?php echo htmlspecialchars($p['size_prices'] ?? '', ENT_QUOTES); ?>"
+                      data-image="<?php echo htmlspecialchars($img, ENT_QUOTES); ?>">
+
+                    <div class="menu-item-inner">
+                      <img class="menu-item-img" src="<?php echo htmlspecialchars($img); ?>" alt="<?php echo htmlspecialchars($p['product_name'] ?: 'Product'); ?>" />
+                      <div class="menu-item-body">
+                        <h3><?php echo htmlspecialchars($p['product_name']); ?></h3>
+                        <p><?php echo htmlspecialchars($p['description'] ?: ''); ?></p>
+                      </div>
+                      <div class="menu-item-footer">
+                        <span class="price">₱<?php echo number_format($displayPrice, 2); ?></span>
+                        <button type="button" class="view-btn">View</button>
+                      </div>
                     </div>
                   </div>
                 <?php endforeach; ?>
@@ -118,7 +191,6 @@ function getProductImage($imagePath, $productName) {
             </div>
           </div>
 
-          <!-- FOOD CAROUSEL -->
           <div>
             <h3 style="font-size:1.3rem; color:#4b2e0b; margin-bottom:1rem; text-align:center;">Food</h3>
             <div class="carousel-container" data-category="food" style="width:280px; margin:0 auto;">
@@ -135,24 +207,27 @@ function getProductImage($imagePath, $productName) {
                   }
                 ?>
                   <div class="carousel-item menu-item" role="button" tabindex="0" 
-                       style="position:absolute; inset:0; opacity:<?php echo $index === 0 ? '1' : '0'; ?>; transition:opacity 0.4s ease;"
-                       data-product-id="<?php echo (int)$p['product_id']; ?>"
-                       data-name="<?php echo htmlspecialchars($p['product_name'], ENT_QUOTES); ?>"
-                       data-desc="<?php echo htmlspecialchars($p['description'] ?: '', ENT_QUOTES); ?>"
-                       data-price="<?php echo number_format($displayPrice, 2, '.', ''); ?>"
-                       data-size-type="<?php echo htmlspecialchars($p['size_type'] ?? 'none', ENT_QUOTES); ?>"
-                       data-size-prices="<?php echo htmlspecialchars($p['size_prices'] ?? '', ENT_QUOTES); ?>"
-                       data-image="<?php echo htmlspecialchars($img, ENT_QUOTES); ?>">
+                    style="position:absolute; inset:0; opacity:<?php echo $index === 0 ? '1' : '0'; ?>; transition:opacity 0.4s ease;"
+                    data-product-id="<?php echo (int)$p['product_id']; ?>"
+                    data-name="<?php echo htmlspecialchars($p['product_name'], ENT_QUOTES); ?>"
+                    data-desc="<?php echo htmlspecialchars($p['description'] ?: '', ENT_QUOTES); ?>"
+                    data-price="<?php echo number_format($displayPrice, 2, '.', ''); ?>"
+                    data-size-type="<?php echo htmlspecialchars($p['size_type'] ?? 'none', ENT_QUOTES); ?>"
+                    data-size-prices="<?php echo htmlspecialchars($p['size_prices'] ?? '', ENT_QUOTES); ?>"
+                    data-image="<?php echo htmlspecialchars($img, ENT_QUOTES); ?>">
+
+                  <div class="menu-item-inner">
                     <img class="menu-item-img" src="<?php echo htmlspecialchars($img); ?>" alt="<?php echo htmlspecialchars($p['product_name'] ?: 'Product'); ?>" />
                     <div class="menu-item-body">
                       <h3><?php echo htmlspecialchars($p['product_name']); ?></h3>
-                      <p><?php echo nl2br(htmlspecialchars($p['description'] ?: '')); ?></p>
+                      <p><?php echo htmlspecialchars($p['description'] ?: ''); ?></p>
                     </div>
                     <div class="menu-item-footer">
                       <span class="price">₱<?php echo number_format($displayPrice, 2); ?></span>
                       <button type="button" class="view-btn">View</button>
                     </div>
                   </div>
+                </div>
                 <?php endforeach; ?>
                 <?php if (empty($food)): ?>
                   <p style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#999;">No food available.</p>
@@ -164,7 +239,6 @@ function getProductImage($imagePath, $productName) {
         </div>
       </section>
 
-      <!-- Map Section -->
       <section id="location" class="location-section menu-preview" style="margin-top:2rem;">
         <h2 style="margin-bottom:1.5rem;">Our Location</h2>
         <div style="display:flex; justify-content:center; margin-bottom:1rem; gap:0.5rem;">
@@ -186,7 +260,6 @@ function getProductImage($imagePath, $productName) {
         </div>
       </section>
 
-      <!-- Product Modal -->
       <div id="productModal" aria-hidden="true" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:1000; align-items:center; justify-content:center;">
         <div style="background:#fff; width:min(520px, 92vw); border-radius:12px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.3); max-height:85vh; overflow-y:auto;">
           <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #eee; position:sticky; top:0; background:#fff; z-index:1;">
@@ -215,32 +288,72 @@ function getProductImage($imagePath, $productName) {
           </div>
         </div>
       </div>
-
-    </main>
-
-    <!-- Admin Login Modal -->
-    <div id="adminModal" aria-hidden="true" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:1000; align-items:center; justify-content:center;">
-      <div style="background:#fff; width:min(480px, 92vw); border-radius:12px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
-        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #eee;">
-          <h3 style="margin:0; font-size:1.15rem;">Admin Login</h3>
-          <button id="adminClose" type="button" aria-label="Close" style="background:#1a1a1a; color:#fff; border:none; width:28px; height:28px; border-radius:50%; cursor:pointer;">×</button>
-        </div>
-        <div style="padding:16px;">
-          <form method="POST" action="/taste-of-paradise-a/php/login_admin.php" style="display:flex; flex-direction:column; gap:10px;">
-            <input type="email" name="email" placeholder="Email" required style="padding:10px; border:1px solid #ddd; border-radius:6px;" />
-            <input type="password" name="password" placeholder="Password" required style="padding:10px; border:1px solid #ddd; border-radius:6px;" />
-            <button type="submit" name="login" style="background:#1a1a1a; color:#fff; padding:10px; border-radius:6px; border:none; cursor:pointer;">Sign in</button>
-          </form>
+      <div id="announcementModal" aria-hidden="true" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:1000; align-items:center; justify-content:center;">
+        <div style="background:#fff; width:min(520px, 92vw); border-radius:12px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.3); max-height:85vh; overflow-y:auto;">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #eee; position:sticky; top:0; background:#fff; z-index:1;">
+            <h3 id="amTitle" style="margin:0; font-size:1.25rem;">Announcement</h3>
+            <button id="amClose" type="button" aria-label="Close" style="background:#1a1a1a; color:#fff; border:none; width:28px; height:28px; border-radius:50%; cursor:pointer;">×</button>
+          </div>
+          <div style="padding:14px 16px;">
+            <div id="amContent" style="white-space:pre-wrap;"></div>
+          </div>
         </div>
       </div>
-    </div>
+    </main>
 
     <footer style="position:relative; z-index:100;">
       <p>&copy; <?php echo date('Y'); ?> Taste of Paradise. All rights reserved.</p>
     </footer>
     <script>
+      (function initAnnouncementModal() {
+        const modal = document.getElementById('announcementModal');
+        const titleEl = document.getElementById('amTitle');
+        const contentEl = document.getElementById('amContent');
+        const closeBtn = document.getElementById('amClose');
+
+        document.querySelectorAll('.announcement-view-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            titleEl.textContent = btn.dataset.title;
+            contentEl.innerHTML = btn.dataset.content;
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+          });
+        });
+
+        closeBtn.addEventListener('click', close);
+        modal.addEventListener('click', e => {
+          if (e.target === modal) close();
+        });
+
+        function close() {
+          modal.style.display = 'none';
+          document.body.style.overflow = '';
+        }
+      })();
+
+      (function initIndexBurger() {
+        const burgerContainer = document.getElementById('index-burger');
+        const hamburger = burgerContainer.querySelector('.hamburger');
+        const menu = burgerContainer.querySelector('.hamburger-menu');
+
+        hamburger.addEventListener('click', (e) => {
+          e.stopPropagation();
+          hamburger.classList.toggle('active');
+          menu.classList.toggle('show');
+          hamburger.setAttribute('aria-expanded', hamburger.classList.contains('active'));
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+          if (!burgerContainer.contains(e.target)) {
+            hamburger.classList.remove('active');
+            menu.classList.remove('show');
+            hamburger.setAttribute('aria-expanded', 'false');
+          }
+        });
+      })();
       // ============================================================================
-      // CAROUSEL DRAG/SWIPE NAVIGATION WITH AUTO-SCROLL
+      // CAROUSEL DRAG/SWIPE NAVIGATION WITH AUTO-SCROLL (PATCHED)
       // ============================================================================
       (function initCarousel() {
         document.querySelectorAll('.carousel-container').forEach(carousel => {
@@ -284,6 +397,9 @@ function getProductImage($imagePath, $productName) {
 
           // Mouse events
           track.addEventListener('mousedown', (e) => {
+            // Ignore if starting on a button inside a carousel-item
+            if (e.target.closest('button')) return;
+
             isDragging = true;
             startX = e.clientX;
             track.style.cursor = 'grabbing';
@@ -306,6 +422,9 @@ function getProductImage($imagePath, $productName) {
 
           // Touch events (mobile)
           track.addEventListener('touchstart', (e) => {
+            // Ignore if starting on a button
+            if (e.target.closest('button')) return;
+
             isDragging = true;
             startX = e.touches[0].clientX;
           });
@@ -343,9 +462,9 @@ function getProductImage($imagePath, $productName) {
         let userLng = null;
         
         const speedProfiles = {
-          car: 40,      // km/h
+          car: 30,      // km/h
           foot: 2.5,    // km/h
-          bike: 60      // km/h
+          bike: 45      // km/h
         };
         
         const map = L.map('map').setView([shopLat, shopLng], 15);
@@ -522,7 +641,6 @@ function getProductImage($imagePath, $productName) {
             label.style.padding = '6px 8px';
             label.style.borderRadius = '4px';
             
-            // Style included add-ons differently
             if (addon.is_included) {
               label.style.background = 'rgba(75, 46, 11, 0.08)';
               label.style.borderLeft = '3px solid #4b2e0b';
@@ -559,7 +677,6 @@ function getProductImage($imagePath, $productName) {
           price.textContent = '₱' + Number(data.price || 0).toFixed(2);
           currentSizePrice = Number(data.price || 0);
           
-          // Handle image
           if (data.image) {
             img.src = data.image;
             img.alt = data.name || 'Product';
@@ -570,7 +687,6 @@ function getProductImage($imagePath, $productName) {
             imgWrap.style.display = 'none';
           }
           
-          // Handle sizes
           const sizeType = data.sizeType || 'none';
           if (sizeType === 's_m_l' && data.sizePrices) {
             try {
@@ -590,7 +706,6 @@ function getProductImage($imagePath, $productName) {
                 selectedPrice.textContent = '₱' + currentSizePrice.toFixed(2);
                 updateTotalPrice();
               };
-              // Set default to smallest size (S)
               const firstAvailableSize = sizeOrder.find(size => sizes[size] !== undefined);
               if (firstAvailableSize) {
                 sizeSelect.value = firstAvailableSize;
@@ -605,10 +720,9 @@ function getProductImage($imagePath, $productName) {
             sizeOptions.style.display = 'none';
           }
           
-          // Fetch add-ons for this product
           const productId = data.productId;
           if (productId) {
-            fetch('/taste-of-paradise-a/php/get_product_addons.php?product_id=' + productId)
+            fetch('php/get_product_addons.php?product_id=' + productId)
               .then(res => res.json())
               .then(addons => renderAddOns(addons))
               .catch(err => {
@@ -635,10 +749,27 @@ function getProductImage($imagePath, $productName) {
           if (e.target === modal) closeModal();
         });
 
-        document.querySelectorAll('.menu-item .view-btn, .menu-item').forEach(el => {
-          el.addEventListener('click', (e) => {
-            const card = e.currentTarget.closest('.menu-item');
-            if (!card) return;
+        // ===========================
+        // PATCHED: Only target carousel items
+        // ===========================
+        document.querySelectorAll('.carousel-item').forEach(card => {
+          const viewBtn = card.querySelector('.view-btn');
+          if (viewBtn) {
+            viewBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              openModal({
+                productId: card.getAttribute('data-product-id'),
+                name: card.getAttribute('data-name'),
+                desc: card.getAttribute('data-desc'),
+                price: card.getAttribute('data-price'),
+                sizeType: card.getAttribute('data-size-type'),
+                sizePrices: card.getAttribute('data-size-prices'),
+                image: card.getAttribute('data-image')
+              });
+            });
+          }
+          // Also allow clicking the card itself
+          card.addEventListener('click', () => {
             openModal({
               productId: card.getAttribute('data-product-id'),
               name: card.getAttribute('data-name'),

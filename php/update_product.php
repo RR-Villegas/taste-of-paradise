@@ -1,124 +1,162 @@
 <?php
 session_start();
+
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    $_GET['redirect'] = '/taste-of-paradise-a/index.php';
-    include 'error_401.php';
+    http_response_code(401);
     exit();
 }
+
 require_once 'config.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id = isset($_POST['product_id']) ? (int)$_POST['product_id'] : 0;
-    $name = trim($_POST['name'] ?? '');
-    $description = trim($_POST['description'] ?? '');
-    $price = $_POST['price'] ?? '';
-    $category = $_POST['category'] ?? 'drink';
-    $sizeType = $_POST['size_type'] ?? 'none';
-    $remove = isset($_POST['remove_image']);
-    $sizePrices = null;
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: ../php/admin.php');
+    exit();
+}
 
-    // Parse size prices based on size type
-    if ($sizeType === 's_m_l') {
-        $sizes = [];
-        if (isset($_POST['size_s']) && isset($_POST['price_s'])) {
-            $sizes['S'] = (float)$_POST['price_s'];
-        }
-        if (isset($_POST['size_m']) && isset($_POST['price_m'])) {
-            $sizes['M'] = (float)$_POST['price_m'];
-        }
-        if (isset($_POST['size_l']) && isset($_POST['price_l'])) {
-            $sizes['L'] = (float)$_POST['price_l'];
-        }
-        if (!empty($sizes)) {
-            $sizePrices = json_encode($sizes);
-        }
+$id = (int)($_POST['product_id'] ?? 0);
+$name = trim($_POST['name'] ?? '');
+$description = trim($_POST['description'] ?? '');
+$removeImage = isset($_POST['remove_image']);
+
+if ($id <= 0 || $name === '') {
+    header('Location: ../php/admin.php?section=manage-products');
+    exit();
+}
+
+/* ================= FETCH OLD DATA ================= */
+
+$stmt = $conn->prepare("
+    SELECT price, size_type, size_prices, image_path, category
+    FROM products
+    WHERE product_id = ?
+");
+$stmt->bind_param('i', $id);
+$stmt->execute();
+$current = $stmt->get_result()->fetch_assoc();
+$stmt->close();
+
+if (!$current) {
+    header('Location: ../php/admin.php?section=manage-products');
+    exit();
+}
+
+$price      = (float)$current['price'];
+$sizeType   = $current['size_type'];
+$sizePrices = $current['size_prices'];
+$category   = $current['category'];
+$imagePath  = $current['image_path'];
+
+/* ================= PRICE UPDATE (SAFE) ================= */
+
+/* ================= PRICE UPDATE (CANONICAL) ================= */
+
+// If S/M/L prices are submitted → S/M/L mode wins
+if (
+    isset($_POST['price_s'], $_POST['price_m'], $_POST['price_l']) &&
+    $_POST['price_s'] !== '' &&
+    $_POST['price_m'] !== '' &&
+    $_POST['price_l'] !== ''
+) {
+    $s = (float)$_POST['price_s'];
+    $m = (float)$_POST['price_m'];
+    $l = (float)$_POST['price_l'];
+
+    $sizePrices = json_encode([
+        'S' => $s,
+        'M' => $m,
+        'L' => $l
+    ]);
+
+    $sizeType = 's_m_l';
+    $price = $m; // DEFAULT TO MEDIUM
+
+} else {
+    // Single price mode
+    if (isset($_POST['price']) && $_POST['price'] !== '') {
+        $price = (float)$_POST['price'];
     }
 
-    if ($id > 0 && $name !== '' && $price !== '') {
-        // Ensure columns exist (compatible)
-        $chk = $conn->query("SELECT COUNT(*) AS c FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME='products' AND COLUMN_NAME='image_path'");
-        if ($chk) {
-            $r = $chk->fetch_assoc();
-            if ((int)($r['c'] ?? 0) === 0) {
-                @$conn->query("ALTER TABLE products ADD COLUMN image_path VARCHAR(255) NULL");
-            }
-        }
-        $checkSize = $conn->query("SELECT COUNT(*) AS c FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME='products' AND COLUMN_NAME='size_type'");
-        if ($checkSize) {
-            $rowSize = $checkSize->fetch_assoc();
-            if ((int)($rowSize['c'] ?? 0) === 0) {
-                @$conn->query("ALTER TABLE products ADD COLUMN size_type VARCHAR(50) DEFAULT 'none'");
-                @$conn->query("ALTER TABLE products ADD COLUMN size_prices JSON NULL");
-                @$conn->query("ALTER TABLE products ADD COLUMN category VARCHAR(50) DEFAULT 'drink'");
-            }
-        }
+    $sizeType = 'none';
+    $sizePrices = null;
+}
 
-        // Fetch current image
-        $current = null;
-        if ($stmt = $conn->prepare('SELECT image_path FROM products WHERE product_id = ?')) {
-            $stmt->bind_param('i', $id);
-            $stmt->execute();
-            $res = $stmt->get_result();
-            $current = $res ? $res->fetch_assoc() : null;
-            $stmt->close();
-        }
-        $oldPath = $current && !empty($current['image_path']) ? $current['image_path'] : null;
-        $finalPath = $oldPath; // default keep
 
-        // If remove requested
-        if ($remove) {
-            if ($oldPath && str_starts_with($oldPath, 'static/image/products/')) {
-                $fsOld = dirname(__DIR__) . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $oldPath);
-                @unlink($fsOld);
+/* ================= IMAGE HANDLING ================= */
+
+$finalImagePath = $imagePath;
+
+// Remove image
+if ($removeImage && $imagePath) {
+    $fs = dirname(__DIR__) . '/' . $imagePath;
+    if (file_exists($fs)) @unlink($fs);
+    $finalImagePath = null;
+}
+
+// Upload new image
+if (!$removeImage && isset($_FILES['image']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
+    $allowed = ['image/jpeg'=>'jpg','image/png'=>'png','image/webp'=>'webp','image/gif'=>'gif'];
+    $mime = mime_content_type($_FILES['image']['tmp_name']);
+
+    if (isset($allowed[$mime]) && $_FILES['image']['size'] <= 5 * 1024 * 1024) {
+        $dir = dirname(__DIR__) . '/static/image/products/';
+        if (!is_dir($dir)) mkdir($dir, 0777, true);
+
+        $ext = $allowed[$mime];
+        $file = uniqid('prod_', true) . '.' . $ext;
+
+        if (move_uploaded_file($_FILES['image']['tmp_name'], $dir . $file)) {
+            if ($imagePath && file_exists(dirname(__DIR__) . '/' . $imagePath)) {
+                @unlink(dirname(__DIR__) . '/' . $imagePath);
             }
-            $finalPath = null;
+            $finalImagePath = 'static/image/products/' . $file;
         }
-
-        // If new image uploaded, validate and save (replaces old)
-        if (!$remove && isset($_FILES['image']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
-            $allowed = ['image/jpeg'=>'jpg','image/png'=>'png','image/gif'=>'gif','image/webp'=>'webp'];
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);
-            $mime = finfo_file($finfo, $_FILES['image']['tmp_name']);
-            finfo_close($finfo);
-            $size = (int)$_FILES['image']['size'];
-            if (isset($allowed[$mime]) && $size <= 5 * 1024 * 1024) {
-                $ext = $allowed[$mime];
-                $uploadDirFs = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'static' . DIRECTORY_SEPARATOR . 'image' . DIRECTORY_SEPARATOR . 'products';
-                if (!is_dir($uploadDirFs)) { @mkdir($uploadDirFs, 0777, true); }
-                $base = preg_replace('/[^A-Za-z0-9_-]/','_', strtolower(pathinfo($name, PATHINFO_FILENAME)));
-                if ($base === '') { $base = 'product'; }
-                $filename = $base . '_' . date('Ymd_His') . '_' . bin2hex(random_bytes(3)) . '.' . $ext;
-                $destFs = $uploadDirFs . DIRECTORY_SEPARATOR . $filename;
-                if (move_uploaded_file($_FILES['image']['tmp_name'], $destFs)) {
-                    // delete old
-                    if ($oldPath && str_starts_with($oldPath, 'static/image/products/')) {
-                        $fsOld = dirname(__DIR__) . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $oldPath);
-                        @unlink($fsOld);
-                    }
-                    $finalPath = 'static/image/products/' . $filename;
-                }
-            }
-        }
-
-        // Update product
-        if ($finalPath === null) {
-            $sql = 'UPDATE products SET product_name = ?, description = ?, price = ?, image_path = NULL, category = ?, size_type = ?, size_prices = ? WHERE product_id = ?';
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param('ssdsssi', $name, $description, $price, $category, $sizeType, $sizePrices, $id);
-        } elseif ($finalPath === $oldPath) {
-            $sql = 'UPDATE products SET product_name = ?, description = ?, price = ?, category = ?, size_type = ?, size_prices = ? WHERE product_id = ?';
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param('ssdsssi', $name, $description, $price, $category, $sizeType, $sizePrices, $id);
-        } else {
-            $sql = 'UPDATE products SET product_name = ?, description = ?, price = ?, image_path = ?, category = ?, size_type = ?, size_prices = ? WHERE product_id = ?';
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param('ssdsssi', $name, $description, $price, $finalPath, $category, $sizeType, $sizePrices, $id);
-        }
-        $stmt->execute();
-        $stmt->close();
     }
 }
 
+/* ================= UPDATE ================= */
+
+if ($finalImagePath === null) {
+    $sql = "
+        UPDATE products
+        SET product_name=?, description=?, price=?, image_path=NULL,
+            size_type=?, size_prices=?
+        WHERE product_id=?
+    ";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('ssdssi',
+        $name, $description, $price,
+        $sizeType, $sizePrices, $id
+    );
+} elseif ($finalImagePath === $imagePath) {
+    $sql = "
+        UPDATE products
+        SET product_name=?, description=?, price=?,
+            size_type=?, size_prices=?
+        WHERE product_id=?
+    ";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('ssdssi',
+        $name, $description, $price,
+        $sizeType, $sizePrices, $id
+    );
+} else {
+    $sql = "
+        UPDATE products
+        SET product_name=?, description=?, price=?, image_path=?,
+            size_type=?, size_prices=?
+        WHERE product_id=?
+    ";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('ssdsssi',
+        $name, $description, $price, $finalImagePath,
+        $sizeType, $sizePrices, $id
+    );
+}
+
+$stmt->execute();
+$stmt->close();
+
 $conn->close();
-header('Location: /taste-of-paradise-a/php/admin.php?section=manage-products#manage-products');
+
+header('Location: ../php/admin.php?section=manage-products#manage-products');
 exit();

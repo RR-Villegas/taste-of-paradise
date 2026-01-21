@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    $_GET['redirect'] = '/taste-of-paradise-a/index.php';
+    $_GET['redirect'] = '../index.php';
     include 'error_401.php';
     exit();
 }
@@ -48,6 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 }
 
 $conn->close();
-header('Location: /taste-of-paradise-a/php/admin.php?section=manage-addons#manage-addons');
+header('Location: ../php/admin.php?section=manage-addons#manage-addons');
 exit();
 ?>

@@ -23,27 +23,27 @@ if ($products && $products->num_rows > 0) {
  * Resolve product image path with fallback logic
  */
 function getProductImage($imagePath, $productName) {
-    // NOTE: Update '/taste-of-paradise-a/' base path if necessary
-    $basePath = '/taste-of-paradise-a/';
-    $default = $basePath . 'static/image/chocolate.png';
-    
+    $default = '../static/image/chocolate.png'; // relative from php/
+
     if (!empty($imagePath)) {
-        return $basePath . $imagePath;
+        return '../' . ltrim($imagePath, '/'); // prepend ../ to reach static/
     }
-    
+
     $nameLc = strtolower(trim($productName ?? ''));
     if ($nameLc !== '') {
         if (strpos($nameLc, 'matcha') !== false) {
-            return $basePath . 'static/image/matcha.png';
+            return '../static/image/matcha.png';
         } elseif (strpos($nameLc, 'okinawa') !== false) {
-            return $basePath . 'static/image/okinawa.png';
+            return '../static/image/okinawa.png';
         } elseif (strpos($nameLc, 'choco') !== false) {
-            return $basePath . 'static/image/chocolate.png';
+            return '../static/image/chocolate.png';
         }
     }
-    
+
     return $default;
 }
+
+
 
 /**
  * Get the price to display (smallest size if s_m_l, otherwise base price)
@@ -70,7 +70,8 @@ function formatCategoryTitle($category) {
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Taste of Paradise | Full Menu</title>
-        <link rel="stylesheet" href="../static/css/homepage.css"/>
+        <link rel="stylesheet" href="../static/css/menu.css"/>
+
         <style>
             /* Additional specific style for the full menu page if needed */
             .full-menu-section {
@@ -113,16 +114,28 @@ function formatCategoryTitle($category) {
         <header>  
             <nav class="navbar">
                 <div class="logo">
-                    <img src="/taste-of-paradise-a/static/image/logo.png" alt="Taste of Paradise" style="height:42px; width:auto; display:block;" />
+                    <img src="../static/image/logo.png" alt="Taste of Paradise" style="height:42px; width:auto; display:block;" />
                 </div>
+
+                <!-- Hamburger -->
+                <button class="hamburger" aria-label="Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+                <!-- Nav links -->
                 <ul class="nav-links">
-                    <li><a href="../index.php">Home</a></li>
+
+                <!-- Hamburger Dropdown -->
+                <div class="hamburger-menu">
+                    <a href="../index.php">Home</a>
+                    <a href="full_menu.php">Menu</a>
                     <?php if ($isUser): ?>
-                        <li><a href="logout.php">Logout</a></li>
                     <?php else: ?>
-                        <li><a href="../login.php">Login</a></li>
+                        <a href="announcements.php">Announcements</a>
                     <?php endif; ?>
-                </ul>
+                </div>
             </nav>
         </header>
 
@@ -233,6 +246,24 @@ function formatCategoryTitle($category) {
         </footer>
 
         <script>
+            (() => {
+                const navbar = document.querySelector('.navbar');
+                const hamburger = navbar.querySelector('.hamburger');
+                const menu = navbar.querySelector('.hamburger-menu');
+
+                hamburger.addEventListener('click', e => {
+                    e.stopPropagation();
+                    hamburger.classList.toggle('active');
+                    menu.classList.toggle('show');
+                });
+
+                document.addEventListener('click', e => {
+                    if (!navbar.contains(e.target)) {
+                        hamburger.classList.remove('active');
+                        menu.classList.remove('show');
+                    }
+                });
+            })();
             // ============================================================================
             // PRODUCT MODAL (Simplified copy from homepage for full_menu consistency)
             // Note: This needs to fetch add-ons via AJAX as it's not pre-loaded here.
